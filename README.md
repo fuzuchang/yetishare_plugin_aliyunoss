@@ -1,0 +1,2 @@
+# yetishare_plugin_aliyunoss
+yetishare文件托管网站插件之阿里云OSS文件存储直传回调
