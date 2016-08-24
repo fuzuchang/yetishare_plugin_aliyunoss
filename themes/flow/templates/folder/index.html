@@ -1,0 +1,304 @@
+<?php
+
+// load folder
+$url = _INT_PAGE_URL;
+$urlParts = explode('/', $url);
+array_shift($urlParts);
+$folderId = (int)current($urlParts);
+if($folderId == 0)
+{
+	// no folder id found
+	coreFunctions::redirect(WEB_ROOT);
+}
+
+// load folder
+$folder = fileFolder::loadById($folderId);
+if(!$folder)
+{
+	// no folder found
+	coreFunctions::redirect(WEB_ROOT);
+}
+
+// store 'sharekey' if we have it
+$isValid = false;
+if(isset($_REQUEST['sharekey']))
+{
+	// check if the key is valid
+	$sharekey = trim($_REQUEST['sharekey']);
+	if(strlen($sharekey) == 64)
+	{
+		$isValid = $db->getValue('SELECT id FROM file_folder_share WHERE access_key = '.$db->quote($sharekey).' AND folder_id = '.(int)$folder->id.' LIMIT 1');
+		if($isValid)
+		{
+			$db->query('UPDATE file_folder_share SET last_accessed = NOW() WHERE id = '.(int)$isValid.' LIMIT 1');
+			$_SESSION['sharekey'.$folder->id] = true;
+			$_SESSION['sharekeyOriginalUrl'] = $folder->getFolderUrl().'?sharekey='.$sharekey;
+		}
+	}
+}
+
+// clear it if we don't have it
+if($isValid == false)
+{
+	$_SESSION['sharekey'.$folder->id] = false;
+	$_SESSION['sharekeyOriginalUrl'] = '';
+	unset($_SESSION['sharekey'.$folder->id]);
+	unset($_SESSION['sharekeyOriginalUrl']);
+}
+
+// make sure it's a public folder or the owner is logged in/has a matching access key
+if ($folderId)
+{
+    $fileFolder = fileFolder::loadById($folderId);
+    if (!$fileFolder)
+    {
+        // failed lookup of the fileFolder
+        coreFunctions::redirect(WEB_ROOT . '/index.' . SITE_CONFIG_PAGE_EXTENSION);
+    }
+	
+	// privacy
+	if(((int)$folder->userId > 0) && ($folder->userId != $Auth->id))
+	{
+		if(coreFunctions::getOverallPublicStatus($folder->userId, $folder->id) == false)
+		{
+			coreFunctions::redirect(WEB_ROOT . '/index.' . SITE_CONFIG_PAGE_EXTENSION);
+		}
+	}
+}
+else
+{
+    coreFunctions::redirect(WEB_ROOT . '/index.' . SITE_CONFIG_PAGE_EXTENSION);
+}
+// check for password if we need it
+$showFolder = true;
+if (strlen($fileFolder->accessPassword) > 0)
+{
+    /* check folder password */
+    if ((int) $_REQUEST['passwordSubmit'])
+    {
+        // check password
+        $folderPassword = trim($_REQUEST['folderPassword']);
+
+        if (!strlen($folderPassword))
+        {
+            notification::setError(t("please_enter_the_folder_password", "Please enter the folder password"));
+        }
+        else
+        {
+            if (md5($folderPassword) == $fileFolder->accessPassword)
+            {
+                // successful
+                $_SESSION['folderPassword'] = md5($folderPassword);
+            }
+            else
+            {
+                // login failed
+                notification::setError(t("password_is_invalid", "The folder password is invalid"));
+            }
+        }
+    }
+    // figure out whether to show the folder
+    $showFolder = false;
+    if (isset($_SESSION['folderPassword']))
+    {
+        // check password
+        if ($_SESSION['folderPassword'] == $fileFolder->accessPassword)
+        {
+            $showFolder = true;
+        }
+    }
+}
+// if the owner is logged in, ignore the password prompt
+if ($fileFolder->userId == $Auth->id)
+{
+    $showFolder = true;
+}
+
+// setup page
+define("PAGE_NAME", t("view_folder_page_name", "View Folder"));
+define("PAGE_DESCRIPTION", t("view_folder_meta_description", "View Folder"));
+define("PAGE_KEYWORDS", t("account_home_meta_keywords", "folder, view, file, your, interface, upload, download, site"));
+define("TITLE_DESCRIPTION_LEFT", t("view_folder_title_page_description_left", ""));
+define("TITLE_DESCRIPTION_RIGHT", t("view_folder_title_page_description_right", ""));
+
+// page OG info (for facebook)
+define("PAGE_OG_TITLE", $folder->folderName.' '.t("folder_page_name", "Folder"));
+define("PAGE_OG_SITE_NAME", SITE_CONFIG_SITE_NAME);
+define("PAGE_OG_DESCRIPTION", PAGE_DESCRIPTION);
+
+// include header
+require_once(SITE_TEMPLATES_PATH . '/partial/_header.inc.php');
+
+// show login box if password required
+if ($showFolder == false)
+{
+    ?>
+    <?php
+    if (notification::isErrors())
+    {
+        echo notification::outputErrors();
+    }
+    ?>
+    <div class="share-folder-wrapper">
+        <h2><?php echo t("folder_restricted", "Folder Restricted"); ?></h2>
+        <p>
+            <?php echo t("folder_login_intro_text", "Please enter the password below to access this folder."); ?>
+        </p>
+        <div class="form col-md-3">
+            <form  method="post" action="<?php echo $fileFolder->getFolderUrl(); ?>" AUTOCOMPLETE="off">
+                <div class="input-group"><span class="input-group-addon"><i class="fa fa-chevron-right"></i></span>
+                    <input name="folderPassword" class="form-control" placeholder="<?php echo t("password", "password"); ?>" type="password"/>
+                </div>
+                <div class="input-group form-buttons"><span class="input-group-btn">
+                        <input name="passwordSubmit" type="hidden" value="1"/>
+                        <button class="btn btn-default" tabindex="99" type="submit" name="submit" style="width:100%;height:60px;"><i class="fa fa-check"></i> <?php echo t("continue", "continue"); ?></button>
+                    </span> 
+                </div>
+            </form>
+        </div>
+    </div>
+    <?php
+}
+// show folder listing
+else
+{
+    // load any public child folders
+    $childFolders = fileFolder::loadAllPublicChildren($folderId);
+
+    // load all files by folder
+    $files = file::loadAllActiveByFolderId($folderId);
+    ?>
+
+    <script>
+        $(document).ready(function() {
+            $('#fileData').dataTable({
+                "sPaginationType": "full_numbers",
+                "aoColumns": [
+                    {"asSorting": ["asc", "desc"]},
+                    {"asSorting": ["asc", "desc"]},
+                    null
+                ],
+                "oLanguage": {
+                    "oPaginate": {
+                        "sFirst": "<?php echo t('datatable_first', 'First'); ?>",
+                        "sPrevious": "<?php echo t('datatable_previous', 'Previous'); ?>",
+                        "sNext": "<?php echo t('datatable_next', 'Next'); ?>",
+                        "sLast": "<?php echo t('datatable_last', 'Last'); ?>"
+                    },
+                    "sEmptyTable": "<?php echo t('datatable_no_data_available_in_table', 'No data available in table'); ?>",
+                    "sInfo": "<?php echo t('datatable_showing_x_to_x_of_total_entries', 'Showing _START_ to _END_ of _TOTAL_ entries'); ?>",
+                    "sInfoEmpty": "<?php echo t('datatable_no_data', 'No data'); ?>",
+                    "sLengthMenu": "<?php echo t('datatable_show_menu_entries', 'Show _MENU_ entries'); ?>",
+                    "sProcessing": "<?php echo t('datatable_loading_please_wait', 'Loading, please wait...'); ?>",
+                    "sInfoFiltered": "<?php echo t('datatable_base_filtered', ' (filtered)'); ?>",
+                    "sSearch": "<?php echo t('datatable_search_text', 'Search:'); ?>",
+                    "sZeroRecords": "<?php echo t('datatable_no_matching_records_found', 'No matching records found'); ?>"
+                }
+            });
+        });
+    </script>
+    <div class="share-folder-wrapper">
+        <h2><?php echo t("files_within_folder", "Files Within Folder"); ?> '<?php echo htmlentities($fileFolder->folderName); ?>'</h2>
+        <?php if ($fileFolder->userId == $Auth->id): ?>
+            <p>
+                <?php
+                if ($fileFolder->isPublic == 0)
+                {
+                    echo t('folder_share_this_folder_can_not_be_shared_as_it_is_not_publicly_accessible', 'This folder can not be shared as it is not set to a publicly accessible folder. Only users with access to your account can see this listing.');
+                }
+                else
+                {
+                    echo t('folder_share_you_can_share_this_page_with_other_external_users', 'You can share this page with other users who do not have access to your account. Just copy the website url in the url bar and provide this via email or other sharing method.');
+                    if (strlen($fileFolder->accessPassword))
+                    {
+                        echo '<br/><br/>';
+                        echo t('folder_share_as_youve_set_a_password_on_this_folder', 'Note: As you\'ve set a password on this folder, users will need to correctly enter this before they gain access to this page.');
+                    }
+                }
+                ?>
+            </p>
+        <?php endif; ?>
+        <?php
+        if ($files || $folders)
+        {
+            echo '<table class="table table-bordered table-striped" width="100%" cellpadding="3" cellspacing="0">';
+            echo '<thead>';
+            echo '<th class="reponsiveMobileHide" style="width: 19px;"></th>';
+            echo '<th>' . t('download_url_filename', 'Download Url/Filename:') . '</th>';
+            echo '<th style="width: 85px; text-align: center;">' . t('options', 'Options:') . '</th>';
+            echo '</thead>';
+            echo '<tbody>';
+            foreach ($childFolders AS $childFolder)
+            {
+				// hydrate folder
+				$fileFolder = fileFolder::hydrate($childFolder);
+
+                // get total files
+                $totalFiles = 0;
+                $allFiles = file::loadAllActiveByFolderId($fileFolder->id);
+                if ($allFiles)
+                {
+                    $totalFiles = COUNT($allFiles);
+                }
+
+                echo '<tr>';
+                echo '<td class="reponsiveMobileHide">';
+                echo '  <img src="' . SITE_IMAGE_PATH . '/folder.png" width="32" height="32" title="' . t('folder', 'folder') . '"/>';
+                echo '</td>';
+                echo '<td title="' . validation::safeOutputToScreen($fileFolder->folderName) . '">';
+                echo '<a href="' . $fileFolder->getFolderUrl() . '">' . validation::safeOutputToScreen($fileFolder->folderName) . '</a>';
+                echo '<br/><span style="color: #999;">' . $totalFiles . ' file' . ($totalFiles != 1 ? 's' : '') . '</font>';
+                echo '</td>';
+
+                $links = array();
+                $links[] = '<a href="' . $fileFolder->getFolderUrl() . '"><img src="' . SITE_IMAGE_PATH . '/group.png" width="16" height="16" title="share" style="margin: 1px;"/></a>';
+                echo '<td style="text-align: center;">' . implode("&nbsp;", $links) . '</td>';
+                echo '</tr>';
+            }
+            foreach ($files AS $file)
+            {
+				if($file['isPublic'] == 1)
+				{
+					$fileUrl = file::getFileUrl($file['id']);
+					
+					echo '<tr>';
+					echo '<td class="reponsiveMobileHide">';
+					$fileTypePath = DOC_ROOT . '/themes/' . SITE_CONFIG_SITE_THEME . '/images/file_icons/32px/' . $file['extension'] . '.png';
+					if (file_exists($fileTypePath))
+					{
+						echo '  <img src="' . SITE_IMAGE_PATH . '/file_icons/32px/' . $file['extension'] . '.png" width="32" height="32" title="' . $file['extension'] . ' file"/>';
+					}
+					else
+					{
+						echo '  <img src="' . SITE_IMAGE_PATH . '/file_icons/32px/_page.png" width="32" height="32" title="' . $file['extension'] . ' file"/>';
+					}
+					echo '</td>';
+					echo '<td title="' . validation::safeOutputToScreen($file['originalFilename']) . '">';
+					echo '<a class="responsiveInfoTable" href="' . $fileUrl . '" target="_blank">' . validation::safeOutputToScreen($file['originalFilename']) .'</a>&nbsp;&nbsp;(' . coreFunctions::formatSize($file['fileSize']) . ')';
+					echo '<br/><span style="color: #999;">' . str_replace(array('http://', 'https://'), '', file::getFileUrl($file['id']));
+					echo '</font>';
+					echo '</td>';
+
+					$links = array();
+					$links[] = '<a href="' . file::getFileShortInfoUrl($file['id']) . '"><img src="' . SITE_IMAGE_PATH . '/group.png" width="16" height="16" title="share" style="margin:1px;"/></a>';
+					$links[] = '<a href="' . $fileUrl . '"><img src="' . SITE_IMAGE_PATH . '/download_icon.png" width="16" height="16" title="download" style="margin: 1px;" target="_blank"/></a>';
+					echo '<td style="text-align: center;">' . implode("&nbsp;", $links) . '</td>';
+					echo '</tr>';
+				}
+            }
+            echo '</tbody>';
+            echo '</table>';
+        }
+        else
+        {
+            echo '<strong>- ' . t('there_are_no_files_within_this_folder', 'There are no files within this folder.') . '</strong>';
+        }
+        ?>
+    </p>
+    </div>
+    <?php
+}
+
+// include footer
+require_once(SITE_TEMPLATES_PATH . '/partial/_footer.inc.php');
+?>

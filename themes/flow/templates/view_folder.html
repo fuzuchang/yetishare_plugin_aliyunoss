@@ -1,0 +1,18 @@
+<?php
+// initial checks
+$folderId = $_REQUEST['_page_url'];
+$folderExp = explode('~', $folderId);
+$folderId = (int) $folderExp[0];
+
+// redirect to new folder structure
+if ($folderId)
+{
+    $fileFolder = fileFolder::loadById($folderId);
+	if($fileFolder)
+	{
+		coreFunctions::redirect($fileFolder->getFolderUrl());
+	}
+}
+
+// fallback
+coreFunctions::redirect(WEB_ROOT . '/index.' . SITE_CONFIG_PAGE_EXTENSION);

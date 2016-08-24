@@ -1,0 +1,1 @@
+ALTER TABLE `file_server` CHANGE `serverType` `serverType` ENUM( 'remote', 'local', 'ftp', 'sftp', 'direct', 'amazon_s3' ) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL;

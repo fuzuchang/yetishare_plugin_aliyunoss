@@ -1,0 +1,191 @@
+
+/* =============   FRONT END RESPONSIVE CODE   ============= */  
+
+@media (max-width: 479px){
+    .downloadPageTable .link {background-image:none; display:initial; color:#326C76; line-height:1px; text-shadow:0 0 0 #565656;}
+    .downloadPageTable .premiumBtn {background-image:none;}
+}
+
+@media (max-width: 1023px){
+    /* =====   HEADER RESPONSIVE CODE   ===== */
+    .mainLogo {clear:both; width:100%; text-align:center; float:left;}
+    .mainNavigation {margin-left:auto; margin-right:auto;}
+    .mainNavigation {width:100%; text-align: center;}
+    .loginPanel {top: 118px; right:99px;}
+    .responsiveNavigation {display:block; width:100%;}
+    .responsiveNavigation input[type="text"], .responsiveNavigation input[type="password"], .responsiveNavigation textarea, .responsiveNavigation select {text-align: center; width: 100%;}
+    .mainNavigation {display:none;}
+    .mobileHide {display:none;}
+
+    /* =====   LOGIN RELATED PAGES RESPONSIVE CODE   ===== */
+    .pluginSocialLoginSignin {display:inline-block;}
+
+    /* =====   UPLOADER RESPONSIVE CODE   ===== */
+    .urlUploadMain .baseText {width:100%;}
+    .fileUploadMain .initialUploadSection .initialUploadText .uploadText, .fileListingWrapper .introText {float:none;}
+    .responsiveUploaderHeader {margin-top:0px; padding-top:20px;}
+    .urlUploadMainInternal {padding:0px;}
+    .fileListingWrapper .globalProgressWrapper {width:70%; float:none; margin-right:auto; margin-left:auto;}
+    .fileuUploadProgressText1 {text-align:center; width:100%; padding-bottom:5px;}
+    .fileuUploadProgressText2 {text-align:center; width:100%;}
+    .template-download .name {display:none;}
+    .template-download .rightArrow {display:none;}
+    .template-download .urlOff {background-image:none;}
+    .fileUploadBadge {display:none;}
+    .fileUploadMain .initialUploadSection .initialUploadText .uploadElement {width:100% !important; margin:0px;}
+    .uploadElement {background-image: none !important; border-style:solid; border-width:1px; background:#fff !important; width:280px !important; height: 66px !important; border-radius:3px;}
+    .fileUploadMain .initialUploadSection .initialUploadText .uploadElement .internal {text-align:center; padding:0px; margin:auto; padding-top:2.5%;}
+    .urlUploadMain .inputElement {width:100%}
+    .urlUploadMain .urlUploadFooter {width:93%;}
+    #fileLeech .urlUploadMain .inputElement {width:100%}
+    #fileLeech .urlUploadMain .urlUploadFooter {width:100%;}
+    .fileLeechTextBox {width:100%; text-align:center !important;}
+    .ftpTextBox {width:100%; text-align:center !important;}
+    .ftpTextBox2 {width:100%;}
+    #additionalOptionsWrapper .itemLeft {width:100%; }
+    #additionalOptionsWrapper .itemRight {width:100%; float:left; }
+    .fileupload-content .fileListingWrapper .fileSectionFooterText .uploadButton {float:none !important; margin-right:auto !important; margin-left:auto !important;  padding-bottom: 5px;}
+    .fileupload-content .baseText {float:none !important; margin-right:auto !important; margin-left:auto !important; text-align:center;}
+    .fileUploadMainInternal {padding:0px;}
+    .fileupload-content .fileListingWrapper .fileSectionFooterText .uploadProcessingButton {margin-right:auto; margin-left:auto; float:none;}
+    .fileupload-progresstext {width:100%;}
+    .fileupload-content {padding:20px; padding-top:0px;}
+    .urlFileUploaderWrapper {padding:20px; padding-top:0px;}
+    .urlUploadMain textarea {padding:0px;}
+    .urlUploadMain .transferFilesButton {margin-left: auto; margin-right: auto; float:none; padding-bottom:10px;}
+    .urlUploadMain .baseText {float: none; text-align: center; padding-bottom:20px;}
+    .ui-tabs .ui-tabs-nav li {display: block; width: 100%; background-color: #fff;}
+    .ui-tabs .ui-tabs-nav li a {display: block; padding-left: 0px; padding-right: 0px; padding-top: 4px; padding-bottom: 4px; width: 100%;}
+    .tabsHover .ui-state-active, .tabsHover .ui-state-hover {border: 1px solid #fff;}
+    .ui-tabs .ui-tabs-nav li {}
+    .ui-tabs .ui-tabs-nav .ui-corner-top {border-top-left-radius:0px; border-top-right-radius: 0px;}
+
+    /* =====   INDEX RESPONSIVE CODE   ===== */
+    .globalPageWrapper {width:100%;}
+    .rightContentWrapper {margin-bottom:20px; width:100%!important; margin-left:0px;}
+    .floatRight {float:none !important;}
+    .fileUploadContent {width:100%;}
+    .homepageInfoWrapper {width:100%; padding-right:0px;}
+    .homepageInfoWrapper .icon1, .homepageInfoWrapper .icon2, .homepageInfoWrapper .icon3, .homepageInfoWrapper .icon4 {float:none; margin-left:auto !important; margin-right:auto !important;}
+    .homepageInfoWrapper .homepageInfo {width:100%;}
+    .homepageInfoOuterWrapper {padding:20px;}
+    .left {width:100%;}
+    .fileUploadContentInternal {padding:0px;}
+    .responsiveClear {clear:both;}
+    .responsiveHide {display:none !important;}
+    .reponsiveMobileHide {display:none !important;}
+    .reponsiveMobileClear {clear:both;}
+    .fileUploadContent {text-align:center;}
+    .homepageInfoWrapper .homepageInfo .homepageInfoTitle {float:none;}
+    .contentPageWrapper h2 {line-height:1; text-align:center; margin-top:0; padding-top: 20px;}
+    .pageSectionMainFull {text-align:center;}
+    .pageSectionMainInternal {padding:0px; padding-bottom:10px !important;}
+    .pageSectionMain {text-align:center;}
+
+    /* =====   FOOTER RESPONSIVE CODE   ===== */
+    .footerBar {font-size:15px; width:100%; padding-left:0px;}
+    .footerAds {float:none; text-align:center; padding-bottom:15px; overflow-x: hidden;}
+    .footerBar .footerLinks {float:none !important; text-align: center;}
+    .footerBar .footerLinks .section1, .footerBar .footerLinks .section2 {width:40%; text-align:left;}
+
+    /* =====   UPGRADE.HTML RESPONSIVE CODE   ===== */
+    .accountBenefitWrapper {width: 100%; text-align:left; float:none;}
+    .responsiveAccountBenefitWrapper {width:235px; margin-left:auto; margin-right:auto;}
+    .upgradeBox {padding-bottom: 10px; }
+
+    /* =====   ACCOUNT_EDIT.HTML RESPONSIVE CODE   ===== */
+    .pageSectionMain {width:100%; margin-bottom:20px;}
+    .settingsRow {padding:0px;}
+    .customFilter {text-align:center;}
+    .responsiveEditItemRow {padding:0px;}
+    .accountEditSelectField {width:87%;}
+
+    /* =====   REGISTER.HTML RESPONSIVE CODE   ===== */
+    #form-join .field-name {position:static;}
+    #form-join input, #form-join textarea {width:95% !important;}
+    #form-join .formTip {display:none;}
+    #form-join .form-content {margin:0px;}
+
+    /* =====   ACCOUNT_HOME.HTML RESPONSIVE CODE   ===== */
+    .fileManagerWrapper .fileManagerMain .folderTreeview, .fileManagerMain .fileManagerMainTable .folderTreeCell {width:170px;}
+    .button-group minor-group {margin-left:0xp;}
+    .fileManagerWrapper .fileManagerMain .fileManagerCell .fileManager {height:83%; width:90%; margin-left:5%;}
+    .folderDropdown {display:block;}
+    .folderDropdown input[type="text"], .folderDropdown input[type="password"], .folderDropdown textarea, .folderDropdown select {margin-bottom: 5px; width: 100%;}
+    .button-container .button.icon:before {width:1px !important; background-image:none !important;}
+    .fileManagerMain .statusBar {text-align:center;}
+    .filterText {width: 100%;}
+    .filterUploadedDateRange {width: 100%;}
+    .filterOrderBy {width: 100%; margin-bottom:5px;}
+    .accountStateTable .first {width:34%;}
+    .fileManagerMain .fileManagerCell .customFilter .filterElements {padding:0px;}
+    .accountFileDetailsPopup .pageHeaderPopupButtons, .popupContent .pageHeaderPopupButtons { float: none; margin-top: 10px; text-align: center;;}
+    .button-container .button-group.minor-group .button.active {padding:5px;}
+    .button-container .button-group > .button:not(:first-child):not(:last-child), .button-container .button-group li:not(:first-child):not(:last-child) .button {padding:5px;}
+    .button-container .button-group.minor-group .button {padding:5px;}
+    .accountEditItemSelect {float:right; width:186%;}
+    .button-container .button.icon:before {margin: 1px !important;}
+
+    /* =====   REPORT_FILE.HTML RESPONSIVE CODE   ===== */
+    #form-join .field-container {width:100% !important; position:static;}
+    .responsiveDigitalSignature {width:270px  !important;}
+    .responsiveReportName {width:300px !important;}
+
+    /* =====   LIGHTBOX RESPONSIVE CODE   ===== */
+    .accountStateTableLightBox2 {width:100%}
+
+    /* =====   VIEW_FOLDER.HTML RESPONSIVE CODE   ===== */
+    .accountStateTableShareFile {width:100%;}
+    .accountStateTableShareFile2 {width:100%;}
+    .dataTables_length {display:none;}
+    .contentPageWrapper .dataTables_filter {width:100% !important;}
+    .dataTables_filter {float:none;}
+
+    /* =====   ACCOUNT_ADD_FOLDER.HTML RESPONSIVE CODE   ===== */
+    #form-join input, #form-join select {width:95%}
+
+    /* =====   STATS.HTML RESPONSIVE CODE   ===== */
+    .responsiveTable {width:100%;}
+
+    /* =====   DOWNLOAD PAGES RESPONSIVE CODE   ===== */
+    .downloadPageTable {width:100%;}
+    .downloadPageTable {background-image: none !important; border:1px solid #E2E2E2}
+    .downloadPageTable table {background-image: none !important;}
+    .downloadPageTable td.descr {border-right:1px solid #E2E2E2;}
+    .downloadPageTable td {border-right:1px solid #E2E2E2;}
+    .downloadPageTableV2 {width:100%; border-right: 1px solid #E2E2E2;}
+    .downloadPageTableV2 .premiumBtn {border-radius: 3px; width: 100px;}
+    .downloadPageTable th.descr {background-image: none !important; padding:12px 0 11px 15px;}
+    .downloadPageTable th {padding:0px;}
+    .contentPageWrapper .largeDownloadButtons img {margin:0px; width:280px; height:112px;}
+    .metaRedirectWrapperTopAds {overflow-x: hidden;}
+    .metaRedirectWrapperBottomAds {overflow-x: hidden;}
+    .downloadPageTableV2 th.descr {background-image:none !important; padding-left:0px; text-align:center;}
+
+    /* =====   CAPTCHA RESPONSIVE CODE   ===== */
+    .captchaPageTable {width:90% !important;}
+    .captchaPageText {width:35%;}
+    .captchaPageButton {padding-top:0px;}
+
+    /* =====   FORMS RESPONSIVE CODE   ===== */
+    .resposiveDeleteItemRow {padding:0px;}
+    .contactFormRow {padding:0px;}
+    .responsiveMobileFolderRow {padding:0px;}
+    .registerRow {padding:0px;}
+    .forgotPasswordRow {padding:0px;}
+    .loginRow {padding:0px;}
+    .reportFileRow {padding:0px;}
+    .faqRow {padding:0px !important;}
+    .newsLetterRow {padding:0px !important;}
+    
+    
+    /* =====   OTHER RESPONSIVE CODE   ===== */
+    .dataTables_info {float:none !important; text-align:center !important; width:100% !important;}
+    .paging_full_numbers {width:100% !important;}
+    .dataTables_paginate {float:none !important; text-align:center !important;}
+    .responsiveCaptchaWrapper {width:300px; margin-left:auto; margin-right:auto;}
+    .responsiveWordWrap {word-break: break-all; word-wrap: break-word;}
+    .responsiveInfoTable {word-break: break-all; word-wrap: break-word;}
+    .pageSectionMainInternal h2{word-break: break-all; word-wrap: break-word;}
+    .pageHeaderPopupTitle h2{word-break: break-all; word-wrap: break-word;}
+}

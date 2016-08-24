@@ -1,0 +1,337 @@
+/* ------------------------------------------
+ * CSS3 GITHUB BUTTONS (Nicolas Gallagher)
+ * Licensed under Unlicense
+ * http://github.com/necolas/css3-github-buttons
+ * --------------------------------------- */
+
+
+/* =============================================================================
+   Base Button
+   ========================================================================== */
+
+.button-container .button {
+    position: relative;
+    overflow: visible;
+    display: inline-block;
+    padding: 0.5em 1em;
+    border: 1px solid #d4d4d4;
+    margin: 0;
+    text-decoration: none;
+    text-align: center;
+    text-shadow: 1px 1px 0 #fff;
+    font:11px/normal sans-serif;
+    color: #333;
+    white-space: nowrap;
+    cursor: pointer;
+    outline: none;
+    background-color: #ececec;
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f4f4f4), to(#ececec));
+    background-image: -moz-linear-gradient(#f4f4f4, #ececec);
+    background-image: -ms-linear-gradient(#f4f4f4, #ececec);
+    background-image: -o-linear-gradient(#f4f4f4, #ececec);
+    background-image: linear-gradient(#f4f4f4, #ececec);
+    -moz-background-clip: padding; /* for Firefox 3.6 */
+    background-clip: padding-box;
+    border-radius: 0.2em;
+    /* IE hacks */
+    zoom: 1;
+    *display: inline;
+}
+
+.button-container .button:hover,
+.button-container .button.active {
+    border-color: #0d7aa4;
+    border-bottom-color: #2a65a0;
+    text-decoration: none;
+    text-shadow: -1px -1px 0 rgba(0,0,0,0.3);
+    color: #fff;
+    background-color: #3c8dde;
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0F93C4), to(#0d7aa4));
+    background-image: -moz-linear-gradient(#0F93C4, #0d7aa4);
+    background-image: -o-linear-gradient(#0F93C4, #0d7aa4);
+    background-image: linear-gradient(#0F93C4, #0d7aa4);
+}
+
+.button-container .button.active {
+    border-color: #2a65a0;
+    border-bottom-color: #3884cd;
+    background-color: #0d7aa4;
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0d7aa4), to(#0F93C4));
+    background-image: -moz-linear-gradient(#0d7aa4, #0F93C4);
+    background-image: -ms-linear-gradient(#0d7aa4, #0F93C4);
+    background-image: -o-linear-gradient(#0d7aa4, #0F93C4);
+    background-image: linear-gradient(#0d7aa4, #0F93C4);
+}
+
+/* overrides extra padding on button elements in Firefox */
+.button-container .button::-moz-focus-inner {
+    padding: 0;
+    border: 0;
+}
+
+
+/* =============================================================================
+   Button icons
+   ========================================================================== */
+
+.button-container .button.icon:before {
+    content: "";
+    position: relative;
+    top: 1px;
+    float:left;
+    width: 12px;
+    height: 12px;
+    margin: 0 0.75em 0 -0.25em;
+    background: url(../images/gh-icons.png) 0 99px no-repeat;
+}
+
+.button-container .button.arrowup.icon:before { background-position: 0 0; }
+.button-container .button.arrowup.icon:hover:before { background-position: -12px 0; }
+
+.button-container .button.arrowdown.icon:before { background-position: 0 -12px; }
+.button-container .button-container button.arrowdown.icon:hover:before { background-position: -12px -12px; }
+
+.button.arrowleft.icon:before { background-position: 0 -24px; }
+.button-container .button.arrowleft.icon:hover:before { background-position: -12px -24px; }
+
+.button-container .button.arrowright.icon:before { float:right; margin: 0 -0.25em 0 0.5em; background-position: 0 -36px; }
+.button-container .button.arrowright.icon:hover:before { background-position: -12px -36px; }
+
+.button-container .button.approve.icon:before { background-position: 0 -48px; }
+.button-container .button.approve.icon:hover:before { background-position: -12px -48px; }
+
+.button-container .button.add.icon:before { background-position: 0 -288px; }
+.button-container .button.add.icon:hover:before { background-position: -12px -288px; }
+
+.button-container .button.remove.icon:before { background-position: 0 -60px; }
+.button-container .button.remove.icon:hover:before { background-position: -12px -60px; }
+
+.button-container .button.log.icon:before { background-position: 0 -72px; }
+.button-container .button.log.icon:hover:before { background-position: -12px -72px; }
+
+.button-container .button.calendar.icon:before { background-position: 0 -84px; }
+.button-container .button.calendar.icon:hover:before { background-position: -12px -84px; }
+
+.button-container .button.chat.icon:before { background-position: 0 -96px; }
+.button-container .button.chat.icon:hover:before { background-position: -12px -96px; }
+
+.button-container .button.clock.icon:before { background-position: 0 -108px; }
+.button-container .button.clock.icon:hover:before { background-position: -12px -108px; }
+
+.button-container .button.settings.icon:before { background-position: 0 -120px; }
+.button-container .button.settings.icon:hover:before { background-position: -12px -120px; }
+
+.button-container .button.comment.icon:before { background-position: 0 -132px; }
+.button-container .button.comment.icon:hover:before { background-position: -12px -132px; }
+
+.button-container .button.fork.icon:before { background-position: 0 -144px; }
+.button-container .button.fork.icon:hover:before { background-position: -12px -144px; }
+
+.button-container .button.like.icon:before { background-position: 0 -156px; }
+.button-container .button.like.icon:hover:before { background-position: -12px -156px; }
+
+.button-container .button.favorite.icon:before { background-position: 0 -348px; }
+.button-container .button.favorite.icon:hover:before { background-position: -12px -348px; }
+
+.button-container .button.home.icon:before { background-position: 0 -168px; }
+.button-container .button.home.icon:hover:before { background-position: -12px -168px; }
+
+.button-container .button.key.icon:before { background-position: 0 -180px; }
+.button-container .button.key.icon:hover:before { background-position: -12px -180px; }
+
+.button-container .button.lock.icon:before { background-position: 0 -192px; }
+.button-container .button.lock.icon:hover:before { background-position: -12px -192px; }
+
+.button-container .button.unlock.icon:before { background-position: 0 -204px; }
+.button-container .button.unlock.icon:hover:before { background-position: -12px -204px; }
+
+.button-container .button.loop.icon:before { background-position: 0 -216px; }
+.button-container .button.loop.icon:hover:before { background-position: -12px -216px; }
+
+.button-container .button.search.icon:before { background-position: 0 -228px; }
+.button-container .button.search.icon:hover:before,
+.button-container .button.search.icon.active:before { background-position: -12px -228px; }
+
+.button-container .button.mail.icon:before { background-position: 0 -240px; }
+.button-container .button.mail.icon:hover:before { background-position: -12px -240px; }
+
+.button-container .button.move.icon:before { background-position: 0 -252px; }
+.button-container .button.move.icon:hover:before { background-position: -12px -252px; }
+
+.button-container .button.edit.icon:before { background-position: 0 -264px; }
+.button-container .button.edit.icon:hover:before { background-position: -12px -264px; }
+
+.button-container .button.pin.icon:before { background-position: 0 -276px; }
+.button-container .button.pin.icon:hover:before { background-position: -12px -276px; }
+
+.button-container .button.reload.icon:before { background-position: 0 -300px; }
+.button-container .button.reload.icon:hover:before { background-position: -12px -300px; }
+
+.button-container .button.rss.icon:before { background-position: 0 -312px; }
+.button-container .button.rss.icon:hover:before { background-position: -12px -312px; }
+
+.button-container .button.tag.icon:before { background-position: 0 -324px; }
+.button-container .button.tag.icon:hover:before { background-position: -12px -324px; }
+
+.button-container .button.trash.icon:before { background-position: 0 -336px; }
+.button-container .button.trash.icon:hover:before { background-position: -12px -336px; }
+
+.button-container .button.user.icon:before { background-position: 0 -360px; }
+.button-container .button.user.icon:hover:before { background-position: -12px -360px; }
+
+
+/* =============================================================================
+   Button extensions
+   ========================================================================== */
+
+/* Primary button
+   ========================================================================== */
+
+.button-container .button.primary {
+    font-weight: bold;
+}
+
+/* Danger button
+   ========================================================================== */
+
+.button-container .button.danger {
+    color: #900;
+}
+
+.button-container .button.danger:hover {
+    border-color: #b53f3a;
+    border-bottom-color: #a0302a;
+    color: #fff;
+    background-color: #dc5f59;
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#dc5f59), to(#b33630));
+    background-image: -moz-linear-gradient(#dc5f59, #b33630);
+    background-image: -ms-linear-gradient(#dc5f59, #b33630);
+    background-image: -o-linear-gradient(#dc5f59, #b33630);
+    background-image: linear-gradient(#dc5f59, #b33630);
+}
+
+.button-container .button.danger.active {
+    border-color: #a0302a;
+    border-bottom-color: #bf4843;
+    background-color: #b33630;
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#b33630), to(#dc5f59));
+    background-image: -moz-linear-gradient(#b33630, #dc5f59);
+    background-image: -ms-linear-gradient(#b33630, #dc5f59);
+    background-image: -o-linear-gradient(#b33630, #dc5f59);
+    background-image: linear-gradient(#b33630, #dc5f59);
+}
+
+/* Pill button
+   ========================================================================== */
+
+.button-container .button.pill {
+    border-radius: 50em;
+}
+
+/* Disabled button
+   ========================================================================== */
+
+.button-container .button.disable {
+    opacity: 0.5;
+}
+
+/* Big button
+   ========================================================================== */
+
+.button-container .button.big {
+    font-size: 14px;
+}
+
+.button-container .button.big.icon:before {
+    top: 0;
+}
+
+
+/* =============================================================================
+   Button groups
+   ========================================================================== */
+
+/* Standard group
+   ========================================================================== */
+
+.button-container .button-group {
+    display: inline-block;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    /* IE hacks */
+    zoom: 1;
+    *display: inline;
+}
+
+.button-container .button + .button,
+.button-container .button + .button-group,
+.button-container .button-group + .button,
+.button-container .button-group + .button-group {
+    margin-left: 15px;
+}
+
+.button-container .button-group li {
+    float: left;
+    padding: 0;
+    margin: 0;
+}
+
+.button-container .button-group .button {
+    float: left;
+    margin-left: -1px;
+}
+
+.button-container .button-group > .button:not(:first-child):not(:last-child),
+.button-container .button-group li:not(:first-child):not(:last-child) .button {
+    border-radius: 0;
+}
+
+.button-container .button-group > .button:first-child,
+.button-container .button-group li:first-child .button {
+    margin-left: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.button-container .button-group > .button:last-child,
+.button-container .button-group li:last-child > .button {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/* Minor group
+   ========================================================================== */
+
+.button-container .button-group.minor-group .button {
+    border: 1px solid #d4d4d4;
+    text-shadow: none;
+    background-image: none;
+    background-color: #fff;
+}
+
+.button-container .button-group.minor-group .button:hover {
+    background-color: #0F93C4;
+}
+
+.button-container .button-group.minor-group .button.active {
+    background-color: #0d7aa4;
+}
+
+.button-container .button-group.minor-group .button.icon:before {
+    opacity: 0.8;
+}
+
+/* =============================================================================
+   Button container (mixing buttons and groups, e.g., nav bar)
+   ========================================================================== */
+
+.button-container .button-container .button,
+.button-container .button-container .button-group {
+    vertical-align: top;
+}
+
+.button-container .button.notext:before
+{
+    margin: 0 -0.30em 0 -0.25em!important;
+}

@@ -1,0 +1,17 @@
+===========================================================
+2016-08-24 22:05:30 - *** ERROR *** Array
+(
+    [Error Msg] => Uncaught exception 'OSS\Core\OssException' with message 'RequestCoreException: cURL resource: Resource id #25; cURL error: Could not resolve host: file2009.oss-cn-shanghai.aliyuncs.com (6)' in D:\xampp\htdocs\yetishare_plugin_aliyunoss\plugins\aliyunoss\includes\alioss\src\OSS\OssClient.php:1724
+Stack trace:
+#0 D:\xampp\htdocs\yetishare_plugin_aliyunoss\plugins\aliyunoss\includes\alioss\src\OSS\OssClient.php(164): OSS\OssClient->auth(Array)
+#1 D:\xampp\htdocs\yetishare_plugin_aliyunoss\plugins\aliyunoss\admin\settings.php(104): OSS\OssClient->doesBucketExist('file2009')
+#2 {main}
+  thrown
+    [File] => D:\xampp\htdocs\yetishare_plugin_aliyunoss\plugins\aliyunoss\includes\alioss\src\OSS\OssClient.php
+    [Line Number] => 1724
+    [Error Type] => E_ERROR
+)
+
+===========================================================
+===========================================================
+2016-08-24 22:07:01 - Upload request to uploadHandler.php: r=oss.web&p=http&csaKey1=e752fea3376650a00a25447c9abd187a6dd7206de25b014a313c0fce645be677&csaKey2=e9ed7728d872564eded08f00183d1f567718f9d76dcdd94e98ecd100bf847869&_sessionid=b908pav3b86rsicpk7mcr5fjh0&cTracker=3bede82d31c3c4a0cee3009a45b1d9dc&maxChunkSize=100000000&folderId=&x%3Afilename=nginx-1.10.1.tar.gz&x%3Auser=1

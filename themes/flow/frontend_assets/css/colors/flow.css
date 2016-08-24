@@ -1,0 +1,142 @@
+.links a {
+	color: #303641;
+}
+address a {
+	color: #303641;
+}
+.cube1, .cube2 {
+	background-color: #303641;
+}
+.color-text {
+	color: #303641;
+}
+.colored-bg{
+color: #fff;
+	background-color: #303641;
+}
+.bluish-grey-bg {
+	background-color: #303641;
+}
+.dark-bluish-grey-bg {
+	background-color: #303641;
+}
+.tp-banner .slider-btn {
+	border: 2px solid #303641;
+	background-color: #303641;
+}
+#navigation ul.nav a:hover {
+	color: #303641;
+}
+#navigation ul.nav .current a {
+	color: #303641;
+}
+.fun-facts .white-box {
+	color: #303641;
+}
+.fun-facts .white-box:hover {
+	background-color: #303641;
+}
+#services .s-items a:hover {
+	color: #303641;
+}
+#services .s-items:hover a {
+	color: #303641;
+}
+.icons {
+	background-color: #303641;
+	border: 2px solid #303641;
+}
+.icons:hover {
+	color: #303641;
+	border: 2px solid #303641;
+}
+.services-detail .heading {
+	color: #303641;
+}
+.services-detail .close-detail a {
+	color: #303641;
+}
+.services-detail .close-detail:hover a {
+	color: #303641;
+}
+#options ul li:hover a, #options ul li a.selected {
+	border: 1px solid #303641;
+	background-color: #303641;
+}
+#container-thumbs .items .picture {
+	background: #303641;
+}
+#container-thumbs .items .details {
+	background: #303641;
+}
+.portfolio-detail .items .details {
+	background: #303641;
+}
+.portfolio-detail .heading {
+	color: #303641;
+}
+ul.social-icons li a:hover {
+	background-color: #303641;
+}
+.team-members .details {
+	background: #303641;
+}
+.team-members:hover .details {
+	background: #303641;
+}
+.team-members .picture {
+	background: #303641;
+}
+.post .picture {
+	background: #303641;
+}
+.post .details {
+	background: #303641;
+}
+.post .description a.blog-btn {
+	color: #303641;
+}
+.post .description a:hover.blog-btn {
+	color: #303641;
+}
+#blog .social-icons ul li a:hover {
+	background-color: #303641;
+}
+.post-comment .btn-default {
+	background-color: #303641;
+	border-color: #303641;
+}
+.tag-list a:hover {
+	background-color: #303641;
+}
+.form-control:focus {
+	border-color: #303641;
+}
+.scrollup {
+	background-color: #303641;
+}
+
+
+.btn-default {
+	background-color: #21a9e1;
+	border-color: #21a9e1;
+    border-radius: 4px !important;
+}
+.btn-default:hover {
+    background-color: #1a8fbf;
+    color: #ffffff;
+    border-color: #1782ad;
+}
+.tp-banner .slider-btn {
+    border-radius: 4px;
+}
+.tp-banner .slider-btn-upload {
+    color: #ffffff;
+    background-color: #303641;
+    border-color: #ffffff;
+}
+.tp-banner .slider-btn-upload:hover {
+    background-color: #474d58;
+    border-color: #ffffff;
+    color: #ffffff;
+}

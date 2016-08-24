@@ -1,0 +1,76 @@
+<?php
+// require login
+if (UserPeer::enableUpgradePage() == 'no')
+{
+    // require login
+    $Auth->requireUser(WEB_ROOT . '/login.' . SITE_CONFIG_PAGE_EXTENSION);
+}
+// page title
+$title = UCWords(t('extend', 'extend'));
+if ($Auth->level_id <= 1)
+{
+    $title = UCWords(t('upgrade', 'upgrade'));
+}
+// setup page
+define("PAGE_NAME", $title . ' ' . UCWords(t("account", "account")));
+define("PAGE_DESCRIPTION", $title . ' ' . t("upgrade_meta_description", "Your Account"));
+define("PAGE_KEYWORDS", strtolower($title) . t("upgrade_meta_keywords", ", account, paid, membership, upload, download, site"));
+define("TITLE_DESCRIPTION_LEFT", t("upgrade_title_page_description_left", "See below for the various account and payment options."));
+define("TITLE_DESCRIPTION_RIGHT", t("upgrade_title_page_description_right", ""));
+define("CURRENT_PAGE_KEY", "upgrade");
+
+// load user
+$user = UserPeer::loadUserById($Auth->id);
+
+// include header
+require_once(SITE_TEMPLATES_PATH . '/partial/_header.inc.php');
+?>
+<div>
+    <h2><?php echo strtolower(PAGE_NAME); ?></h2>
+    <?php include_once(SITE_TEMPLATES_PATH . '/partial/_upgrade_boxes.inc.php'); ?>
+
+<?php
+	// include any plugin includes
+	pluginHelper::includeAppends('_upgrade.php');
+?>
+	
+<?php if ($Auth->loggedIn()): ?>
+    <h2><?php echo t("account_status", "account status"); ?></h2>
+    <div style="padding-bottom: 12px;">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="width: 280px;">
+                        <?php echo UCWords(t('account_type', 'account type')); ?>:
+                    </td>
+                    <td>
+                        <?php echo t('account_type_' . str_replace(' ', '_', $Auth->level), UCWords($Auth->level)); ?>
+                    </td>
+                </tr>
+
+                <?php 
+				$userType = $db->getValue('SELECT level_type FROM user_level WHERE id = '.$user->level_id.' LIMIT 1');
+				if(in_array($userType, array('paid', 'admin', 'moderator'))):
+				?>
+                    <tr>
+                        <td>
+                            <?php echo UCWords(t('reverts_to_free_account', 'reverts to free account')); ?>:
+                        </td>
+                        <td>
+                            <?php echo(in_array($userType, array('admin', 'moderator'))) ? UCWords(t('never', 'never')) : coreFunctions::formatDate($user->paidExpiryDate); ?>
+                        </td>
+                    </tr>
+                <?php endif ?>
+            </tbody>
+        </table>
+    </div>
+<?php endif; ?>
+<h2><?php echo t("account_benefits", "account benefits"); ?></h2>
+<?php
+include_once(SITE_TEMPLATES_PATH . '/partial/_upgrade_benefits.inc.php');
+?>
+</div>
+<?php
+// include footer
+require_once(SITE_TEMPLATES_PATH . '/partial/_footer.inc.php');
+?>

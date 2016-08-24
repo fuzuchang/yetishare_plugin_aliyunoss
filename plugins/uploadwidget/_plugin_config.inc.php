@@ -1,0 +1,1 @@
+<?php// core plugin config$pluginConfig = array();$pluginConfig['plugin_name']             = 'Upload Widget';$pluginConfig['folder_name']             = 'uploadwidget';$pluginConfig['plugin_description']      = 'Embed a file uploader directly on your own website.';$pluginConfig['plugin_version']          = 2;$pluginConfig['required_script_version'] = "4.0";

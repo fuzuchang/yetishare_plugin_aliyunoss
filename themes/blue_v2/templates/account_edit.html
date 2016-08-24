@@ -1,0 +1,527 @@
+<?php
+// require login
+$Auth->requireUser(WEB_ROOT . '/login.' . SITE_CONFIG_PAGE_EXTENSION);
+
+/* load user */
+$user = UserPeer::loadUserById($Auth->id);
+if (!$user)
+{
+    coreFunctions::redirect(WEB_ROOT);
+}
+
+$title = $user->title;
+$firstname = $user->firstname;
+$lastname = $user->lastname;
+$emailAddress = $user->email;
+$languageId = $user->languageId;
+if ($languageId == null)
+{
+	$languageId = $db->getValue("SELECT id FROM language WHERE isActive = 1 AND languageName = '" . $db->escape(trim($_REQUEST['_t'])) . "' LIMIT 1");
+}
+$privateFileStatistics = $user->privateFileStatistics;
+
+if(isset($_REQUEST['s']))
+{
+    notification::setSuccess(t("account_lock_activation_success_message", "Account successfully secured."));
+}
+if(isset($_REQUEST['f']))
+{
+    notification::setSuccess(t("account_lock_activation_failure_message", "Account could not be secured at this time, please try again later."));
+}
+if(isset($_REQUEST['us']))
+{
+    notification::setSuccess(t("account_lock_deactivation_success_message", "Account successfully unlocked."));
+}
+if(isset($_REQUEST['uf']))
+{
+    notification::setSuccess(t("account_lock_deactivation_failure_message", "Account could not be unlocked at this time, please try again later."));
+}
+if(isset($_REQUEST['e']))
+{
+    notification::setSuccess(t("account_lock_resend_email_confirm_message", "The email containing the unlock code has been emailed to the registered email account."));
+}
+$lockStatus = coreFunctions::getUsersAccountLockStatus($Auth->id);
+
+/* setup page */
+define("PAGE_NAME", t("account_edit_page_name", "Account Details"));
+define("PAGE_DESCRIPTION", t("account_edit_meta_description", "Account details"));
+define("PAGE_KEYWORDS", t("account_edit_meta_keywords", "details, account, short, url, user"));
+
+/* update user */
+if (isset($_REQUEST['submitme']) && (int) $_REQUEST['submitme'])
+{
+    // validation
+    $title 					= trim($_REQUEST['title']);
+    $firstname 				= trim($_REQUEST['firstname']);
+    $lastname 				= trim($_REQUEST['lastname']);
+    $emailAddress 			= trim(strtolower($_REQUEST['emailAddress']));
+    $password 				= trim($_REQUEST['password']);
+    $passwordConfirm 		= trim($_REQUEST['passwordConfirm']);
+    $languageId 			= null;
+	$accountLock 			= (int)$_REQUEST['activateAccountLock'];
+    if($lockStatus == 0)
+    {
+        if (isset($_REQUEST['languageId']))
+        {
+            $languageId = (int) $_REQUEST['languageId'];
+        }
+        $privateFileStatistics = (int) $_REQUEST['privateFileStatistics'];
+    
+        if (!strlen($title))
+        {
+            notification::setError(t("please_enter_your_title", "Please enter your title"));
+        }
+        elseif (!strlen($firstname))
+        {
+            notification::setError(t("please_enter_your_firstname", "Please enter your firstname"));
+        }
+        elseif (!strlen($lastname))
+        {
+            notification::setError(t("please_enter_your_lastname", "Please enter your lastname"));
+        }
+        elseif (!strlen($emailAddress))
+        {
+            notification::setError(t("please_enter_your_email_address", "Please enter your email address"));
+        }
+        elseif (!validation::validEmail($emailAddress))
+        {
+            notification::setError(t("your_email_address_is_invalid", "Your email address is invalid"));
+        }
+        elseif (_CONFIG_DEMO_MODE == true)
+        {
+            notification::setError(t("no_changes_in_demo_mode"));
+        }
+        else
+        {
+            $checkEmail = UserPeer::loadUserByEmailAddress($emailAddress);
+            if (($checkEmail) && ($checkEmail->id != $Auth->id))
+            {
+                // username exists
+                notification::setError(t("email_address_already_exists", "Email address already exists on another account"));
+            }
+            else
+            {
+                // check password if one set
+                if (strlen($password))
+                {
+                    if ($password != $passwordConfirm)
+                    {
+                        notification::setError(t("your_password_confirmation_does_not_match", "Your password confirmation does not match"));
+                    }
+                    else
+                    {
+                        $passValid = passwordPolicy::validatePassword($password);
+                        if (is_array($passValid))
+                        {
+                            notification::setError(implode('<br/>', $passValid));
+                        }
+                    }
+                }
+            }
+        }
+    }
+    elseif(($lockStatus == 1) && $accountLock == 0)
+    {
+        notification::setError(t("account_lock_deactivation_no_code_message", "Please enter the unlock code and try again."));   
+    }
+    
+    if (!notification::isErrors())
+    {
+        if(($accountLock == 1) && (SITE_CONFIG_SECURITY_ACCOUNT_LOCK == 'yes'))
+        {
+            // Generate the locking Hash
+            $lockHash = coreFunctions::generateSecurityLockHash();  
+			
+            // Update the database
+            $db = Database::getDatabase(true);
+            $rs = $db->query("UPDATE users SET accountLockStatus = '1', accountLockHash = ".$db->quote($lockHash)." WHERE id = ".(int)$Auth->id);
+			
+			if($rs && (!notification::isErrors()))
+			{
+				// Send email to the registered account
+				$subject = t('lock_account_email_subject', 'Security lock details for [[[SITE_NAME]]]', array('SITE_NAME' => SITE_CONFIG_SITE_NAME));
+				$replacements   = array(
+										'FIRST_NAME'    => $user->firstname,
+										'SITE_NAME'     => SITE_CONFIG_SITE_NAME,
+										'UNLOCK_CODE'   => $lockHash
+										);
+				$defaultContent = "Dear [[[FIRST_NAME]]],<br/><br/>";
+				$defaultContent .= "Your account on [[[SITE_NAME]]] has been locked as per your request. Use the code below to unlock your account:<br/><br/>";
+				$defaultContent .= "<strong>Unlock code:</strong> [[[UNLOCK_CODE]]]<br/><br/>";
+				$defaultContent .= "Feel free to contact us if you need any support with your account.<br/><br/>";
+				$defaultContent .= "Regards,<br/>";
+				$defaultContent .= "[[[SITE_NAME]]] Admin";
+				$htmlMsg        = t('lock_account_email_content', $defaultContent, $replacements);
+			
+				coreFunctions::sendHtmlEmail($user->email, $subject, $htmlMsg, SITE_CONFIG_DEFAULT_EMAIL_ADDRESS_FROM, strip_tags(str_replace("<br/>", "\n", $htmlMsg)));
+				coreFunctions::redirect(WEB_ROOT.'/account_edit.html?s=1');
+			}
+			else
+			{
+				coreFunctions::redirect(WEB_ROOT.'/account_edit.html?f=1');
+			}
+		}
+    }
+
+    // update the account
+    if (!notification::isErrors())
+    {
+        // if password changed send confirmation notice to user
+        if (SITE_CONFIG_SECURITY_SEND_USER_EMAIL_ON_PASSWORD_CHANGE == 'yes')
+        {
+            if (strlen($password))
+            {
+                $subject = t('password_change_email_subject', 'Password changed for account on [[[SITE_NAME]]]', array('SITE_NAME' => SITE_CONFIG_SITE_NAME));
+
+                $replacements = array(
+                    'FIRST_NAME' => $user->firstname,
+                    'SITE_NAME' => SITE_CONFIG_SITE_NAME,
+                    'WEB_ROOT' => WEB_ROOT,
+                    'USERNAME' => $Auth->username,
+                );
+                $defaultContent = "Dear [[[FIRST_NAME]]],<br/><br/>";
+                $defaultContent .= "This is a courtesy email notifying you that your account password on [[[SITE_NAME]]] has been changed.<br/><br/>";
+                $defaultContent .= "If you didn't change your password, please contact us immediately. Otherwise just ignore this email.<br/><br/>";
+                $defaultContent .= "<strong>Url:</strong> <a href='[[[WEB_ROOT]]]'>[[[WEB_ROOT]]]</a><br/>";
+                $defaultContent .= "<strong>Username:</strong> [[[USERNAME]]]<br/><br/>";
+                $defaultContent .= "Feel free to contact us if you need any support with your account.<br/><br/>";
+                $defaultContent .= "Regards,<br/>";
+                $defaultContent .= "[[[SITE_NAME]]] Admin";
+                $htmlMsg = t('password_change_email_content', $defaultContent, $replacements);
+
+                coreFunctions::sendHtmlEmail($user->email, $subject, $htmlMsg, SITE_CONFIG_DEFAULT_EMAIL_ADDRESS_FROM, strip_tags(str_replace("<br/>", "\n", $htmlMsg)));
+            }
+        }
+
+        // if email changed send confirmation notice to user
+        if (SITE_CONFIG_SECURITY_SEND_USER_EMAIL_ON_EMAIL_CHANGE == 'yes')
+        {
+            if ($emailAddress != $user->email)
+            {
+                $subject = t('email_change_email_subject', 'Email changed for account on [[[SITE_NAME]]]', array('SITE_NAME' => SITE_CONFIG_SITE_NAME));
+
+                $replacements = array(
+                    'FIRST_NAME' => $user->firstname,
+                    'SITE_NAME' => SITE_CONFIG_SITE_NAME,
+                    'WEB_ROOT' => WEB_ROOT,
+                    'USERNAME' => $user->username,
+                    'NEW_EMAIL' => $emailAddress,
+                );
+                $defaultContent = "Dear [[[FIRST_NAME]]],<br/><br/>";
+                $defaultContent .= "This is a courtesy email notifying you that your account email address on [[[SITE_NAME]]] has been changed to [[[NEW_EMAIL]]].<br/><br/>";
+                $defaultContent .= "If you didn't change your email address, please contact us immediately. Otherwise just ignore this email.<br/><br/>";
+                $defaultContent .= "<strong>Url:</strong> <a href='[[[WEB_ROOT]]]'>[[[WEB_ROOT]]]</a><br/>";
+                $defaultContent .= "<strong>Username:</strong> [[[USERNAME]]]<br/>";
+                $defaultContent .= "<strong>New Email:</strong> [[[NEW_EMAIL]]]<br/><br/>";
+                $defaultContent .= "Feel free to contact us if you need any support with your account.<br/><br/>";
+                $defaultContent .= "Regards,<br/>";
+                $defaultContent .= "[[[SITE_NAME]]] Admin";
+                $htmlMsg = t('email_change_email_content', $defaultContent, $replacements);
+
+                coreFunctions::sendHtmlEmail($user->email, $subject, $htmlMsg, SITE_CONFIG_DEFAULT_EMAIL_ADDRESS_FROM, strip_tags(str_replace("<br/>", "\n", $htmlMsg)));
+            }
+        }
+
+        $db = Database::getDatabase(true);
+        $rs = $db->query('UPDATE users SET title = :title, firstname = :firstname, lastname = :lastname, email = :email, languageId = :languageId, privateFileStatistics = :privateFileStatistics WHERE id = :id', array('title' => $title, 'firstname' => $firstname, 'lastname' => $lastname, 'email' => $emailAddress, 'id' => $Auth->id, 'languageId' => $languageId, 'privateFileStatistics' => $privateFileStatistics));
+        if ($rs)
+        {
+            // do password
+            if (strlen($password))
+            {
+                $rs = $db->query('UPDATE users SET password = :password WHERE id = :id', array('password' => Password::createHash($password), 'id' => $Auth->id));
+            }
+
+            // reset site language if updated
+            if ($languageId != null)
+            {
+                $languageName = $db->getValue("SELECT languageName FROM language WHERE isActive = 1 AND id = " . (int) $languageId . " LIMIT 1");
+                if ($languageName)
+                {
+                    $_SESSION['_t'] = $languageName;
+                }
+            }
+
+            notification::setSuccess(t("account_updated_success_message", "Account details successfully updated"));
+        }
+        else
+        {
+            notification::setError(t("problem_creating_your_account_try_again_later", "There was a problem creating your account, please try again later"));
+        }
+    }
+}
+if((isset($_REQUEST['unlockAccount']) && (int)$_REQUEST['unlockAccount']) && (isset($_REQUEST['unlockCode'])))
+{
+    $unlockCode = $_REQUEST['unlockCode'];
+    if(!$unlockCode)
+    {
+        notification::setError(t("account_lock_deactivation_no_code_message", "Please enter the unlock code and try again."));
+    }
+    if(!notification::isErrors())
+    {
+        // get the unlock code from the DB
+        $unlockCode = $db->getRow("SELECT accountLockHash FROM users WHERE id = '".$Auth->id."' AND accountLockStatus = '1' AND accountLockHash = '".$db->escape($unlockCode)."' LIMIT 1");
+        if($unlockCode)
+        {
+            $rs = $db->query("UPDATE users SET accountLockStatus = '0', accountLockHash = '' WHERE id = ".$Auth->id);
+            if($rs)
+            {
+                coreFunctions::redirect(WEB_ROOT.'/account_edit.html?us=1');
+            }
+        }
+        else
+        {
+            coreFunctions::redirect(WEB_ROOT.'/account_edit.html?uf=1');
+        }
+    }    
+}
+if((isset($_REQUEST['resendCode'])) && ((int)$_REQUEST['resendCode']) && (isset($_REQUEST['rs'])) && ((int)$_REQUEST['rs']))
+{
+    // send email to the registered account
+    $details = $db->getRow("SELECT * FROM users WHERE id = ".(int)$Auth->id." LIMIT 1");
+    
+    $subject = t('lock_account_email_subject', 'Security lock details for [[[SITE_NAME]]]', array('SITE_NAME' => SITE_CONFIG_SITE_NAME));
+    $replacements   = array(
+                            'FIRST_NAME'    => $user->firstname,
+                            'SITE_NAME'     => SITE_CONFIG_SITE_NAME,
+                            'UNLOCK_CODE'   => $details['accountLockHash']
+                            );
+    $defaultContent = "Dear [[[FIRST_NAME]]],<br/><br/>";
+    $defaultContent .= "Your account on [[[SITE_NAME]]] has been locked as per your request. Use the code below to unlock your account:<br/><br/>";
+    $defaultContent .= "<strong>Unlock code:</strong> [[[UNLOCK_CODE]]]<br/><br/>";
+    $defaultContent .= "Feel free to contact us if you need any support with your account.<br/><br/>";
+    $defaultContent .= "Regards,<br/>";
+    $defaultContent .= "[[[SITE_NAME]]] Admin";
+    $htmlMsg        = t('lock_account_email_content', $defaultContent, $replacements);
+
+    coreFunctions::sendHtmlEmail($user->email, $subject, $htmlMsg, SITE_CONFIG_DEFAULT_EMAIL_ADDRESS_FROM, strip_tags(str_replace("<br/>", "\n", $htmlMsg)));
+    coreFunctions::redirect(WEB_ROOT.'/account_edit.html?e=1');
+}
+
+// include header
+require_once(SITE_TEMPLATES_PATH . '/partial/_header.inc.php');
+
+?>
+<script>
+$(document).ready(
+    function(){
+        $(".requestCode").click(function () {
+            $(".requestCodeHidden").toggle();
+        });
+    });
+</script>
+<div class="contentPageWrapper">
+    <?php
+    if (notification::isSuccess())
+    {
+        echo notification::outputSuccess();
+    }
+    elseif (notification::isErrors())
+    {
+        echo notification::outputErrors();
+    }
+    ?>
+    <!-- register form -->
+    <div class="pageSectionMain ui-corner-all">
+        <div class="pageSectionMainInternal">
+            <div id="pageHeader">
+                <h2><?php echo t("account_details", "Account Details"); ?></h2>
+            </div>
+            <div>
+                <p class="introText">
+                    <?php t('keep_your_account_details_up_to_date_below', 'Keep your account details up to date below.'); ?>
+                </p>
+                <form class="international" method="post" action="<?php echo WEB_ROOT; ?>/account_edit.<?php echo SITE_CONFIG_PAGE_EXTENSION; ?>" id="form-join">
+                    <ul class="settingsRow">
+                    <?php if($lockStatus == 0): ?>
+                    <?php 
+					$userType = $db->getValue('SELECT level_type FROM user_level WHERE id = '.$user->level_id.' LIMIT 1');
+					if(in_array($userType, array('paid', 'admin', 'moderator'))):
+					?>
+                        <li class="field-container">
+                            <label>
+                                <span class="field-name"><?php echo t('paid_account_expires', 'Premium Expires.'); ?></span>
+                                <div class="input" style="padding-top: 9px !important;"><?php echo(in_array($userType, array('admin', 'moderator'))) ? UCWords(t('never', 'never')) : coreFunctions::formatDate($user->paidExpiryDate); ?></div>
+                            </label>
+                        </li>
+                    <?php endif; ?>
+                        <li class="field-container">
+                            <label for="title">
+                                <span class="field-name"><?php echo t("title", "Title"); ?></span>
+                                <select autofocus="autofocus" tabindex="1" id="title" name="title" onFocus="showHideTip(this);">
+                                    <option value="Mr" <?php echo ($title == 'Mr') ? 'SELECTED' : ''; ?>><?php echo t('title_mr', 'Mr'); ?></option>
+                                    <option value="Mrs" <?php echo ($title == 'Mrs') ? 'SELECTED' : ''; ?>><?php echo t('title_mrs', 'Mrs'); ?></option>
+                                    <option value="Miss" <?php echo ($title == 'Miss') ? 'SELECTED' : ''; ?>><?php echo t('title_miss', 'Miss'); ?></option>
+                                    <option value="Dr" <?php echo ($title == 'Dr') ? 'SELECTED' : ''; ?>><?php echo t('title_dr', 'Dr'); ?></option>
+                                    <option value="Pro" <?php echo ($title == 'Pro') ? 'SELECTED' : ''; ?>><?php echo t('title_pro', 'Pro'); ?></option>
+                                </select>
+                            </label>
+                            <div id="titleTip" class="hidden formTip">
+                                <?php echo t('your_title', 'Your title'); ?>
+                            </div>
+                        </li>
+                        <li class="field-container"><label for="firstname">
+                                <span class="field-name"><?php echo t("firstname", "Firstname"); ?></span>
+                                <input type="text" tabindex="2" value="<?php echo isset($firstname) ? validation::safeOutputToScreen($firstname) : ''; ?>" id="firstname" name="firstname" class="uiStyle" onFocus="showHideTip(this);"></label>
+                            <div id="firstnameTip" class="hidden formTip">
+                                <?php echo t('your_firstname', 'Your firstname'); ?>
+                            </div>
+                        </li>
+                        <li class="field-container"><label for="lastname">
+                                <span class="field-name"><?php echo t("lastname", "Lastname"); ?></span>
+                                <input type="text" tabindex="3" value="<?php echo isset($lastname) ? validation::safeOutputToScreen($lastname) : ''; ?>" id="lastname" name="lastname" class="uiStyle" onFocus="showHideTip(this);"></label>
+                            <div id="lastnameTip" class="hidden formTip">
+                                <?php echo t('your_lastname', 'Your lastname'); ?>
+                            </div>
+                        </li>
+                        <li class="field-container"><label for="emailAddress">
+                                <span class="field-name"><?php echo t("email_address", "Email Address"); ?></span>
+                                <input type="text" tabindex="4" value="<?php echo isset($emailAddress) ? validation::safeOutputToScreen($emailAddress) : ''; ?>" id="emailAddress" name="emailAddress" class="uiStyle" onFocus="showHideTip(this);"></label>
+                            <div id="emailAddressTip" class="hidden formTip">
+                                <?php echo t('your_new_email_address', 'Your new email address'); ?>
+                            </div>
+                        </li>
+                        <li class="field-container"><label for="password">
+                                <span class="field-name"><?php echo t("change_password", "Change Password"); ?></span>
+                                <input type="password" tabindex="5" value="" id="password" name="password" class="uiStyle" onFocus="showHideTip(this);" autocomplete="off"></label>
+                            <div id="passwordTip" class="hidden formTip">
+                                <?php echo t('a_new_account_password_leave_blank_to_keep', 'Optional. A new account password, leave this blank to keep your existing.'); ?>
+                            </div>
+                        </li>
+                        <li class="field-container" style="margin-bottom: 20px;"><label for="passwordConfirm">
+                                <span class="field-name"><?php echo t("confirm_password_edit", "Confirm Password"); ?></span>
+                                <input type="password" tabindex="5" value="" id="passwordConfirm" name="passwordConfirm" class="uiStyle" onFocus="showHideTip(this);" autocomplete="off"></label>
+                            <div id="passwordConfirmTip" class="hidden formTip">
+                                <?php echo t('a_new_account_password_confirm_leave_blank_to_keep', 'Optional. Confirm the password entered above, leave this blank to keep your existing.'); ?>
+                            </div>
+                        </li>
+                        <?php
+                        // language selector
+                        if (SITE_CONFIG_LANGUAGE_USER_SELECT_LANGUAGE == 'yes')
+                        {
+                            $activeLanguages = $db->getRows("SELECT id, languageName FROM language WHERE isActive = 1 ORDER BY languageName ASC");
+                            if (COUNT($activeLanguages))
+                            {
+                                ?>
+                                <li class="field-container">
+                                    <label for="languageId">
+                                        <span class="field-name"><?php echo t("language", "Language"); ?></span>
+                                        <select tabindex="6" id="languageId" name="languageId" onFocus="showHideTip(this);">
+                                            <?php
+                                            foreach ($activeLanguages AS $activeLanguage)
+                                            {
+                                                echo '<option value="' . $activeLanguage['id'] . '"';
+                                                if ($languageId == $activeLanguage['id'])
+                                                {
+                                                    echo ' SELECTED';
+                                                }
+                                                echo '>' . validation::safeOutputToScreen($activeLanguage['languageName']) . '</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                    </label>
+                                    <div id="languageIdTip" class="hidden formTip">
+                                        <?php echo t('settings_tip_site_language', 'The language to use on the site.'); ?>
+                                    </div>
+                                </li>
+                                <?php
+                            }
+                        }
+                        ?>   
+                        <li class="field-container">
+                            <label for="privateFileStatistics">
+                                <span class="field-name"><?php echo t("file_statistics", "File Statistics"); ?></span>
+                                <select tabindex="6" id="privateFileStatistics" name="privateFileStatistics" onFocus="showHideTip(this);">
+                                    <?php
+                                    $optionsArr = array('0' => t('settings_statistics_public', 'Publicly Accessible (using ~s on url)'), '1' => t('settings_statistics_private', 'Private (only via your account)'));
+                                    foreach ($optionsArr AS $k => $option)
+                                    {
+                                        echo '<option value="' . $k . '"';
+                                        if ($privateFileStatistics == $k)
+                                        {
+                                            echo ' SELECTED';
+                                        }
+                                        echo '>' . validation::safeOutputToScreen($option) . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </label>
+                            <div id="privateFileStatisticsTip" class="hidden formTip">
+                                <?php echo t('settings_tip_file_statistics', 'Whether to keep all file stats private or allow public access.'); ?>
+                            </div>
+                        </li>
+                        <?php endif; ?>
+						<?php if(SITE_CONFIG_SECURITY_ACCOUNT_LOCK == 'yes'): ?>
+                        <li class="field-container">
+                            <label for="accountLock">
+                                <span class="field-name"><?php echo ucwords(t("account_lock_status", "Account status")); ?></span>
+                                 <div class="input" style="padding-top: 9px !important; padding-bottom:5px;">
+                                <?php echo (($lockStatus == 1) ? 'Locked' : 'Unlocked'); ?>
+                                </div> 
+                            </label>
+                        </li>                        
+                        <?php if($lockStatus == 0): ?>
+						<li class="field-container">
+                            <label for="activateAccountLock">
+                                <span class="field-name"><?php echo t("account_lock", "Account Lock"); ?></span>
+                                <select tabindex="7" id="activateAccountLock" name="activateAccountLock" onFocus="showHideTip(this);" style="padding-bottom:8px;">
+                                    <option value="0"><?php echo t('do_nothing', 'Do Nothing'); ?></option>
+									<option value="1"><?php echo t('activate_lock', 'Activate Lock'); ?></option>
+                                </select>
+                            </label>
+                            <div id="activateAccountLockTip" class="hidden formTip">
+                                <?php echo t('account_lock_long_description_blue_v2', 'The account security lock prevents your account details and files from being edited, moved and deleted.'); ?>
+                            </div>
+                        </li>
+                        <?php endif; ?>
+                        <?php if($lockStatus == 1): ?>
+                        <li class="field-container">
+                            <label for="unlockCode">
+                                <span class="field-name"><?php echo t("account_unlock_code", "Unlock Code"); ?></span>
+                                <input type="text" tabindex="8" id="unlockCode" name="unlockCode" class="uiStyle" onFocus="showHideTip(this);" autocomplete="off"/>
+                            </label>
+                            <div id="unlockCodeTip" class="hidden formTip">
+                                <?php echo t('account_unlock_long_description', 'The unlock code that was sent to the registered email address when the lock was activated.'); ?>
+                            </div>
+                        </li>                        
+						<?php endif; ?>
+                        <li class="field-container">
+                            <span class="field-name"></span>
+                        <?php if(($lockStatus == 0) || (SITE_CONFIG_SECURITY_ACCOUNT_LOCK == 'no')): ?>
+                            <input tabindex="99" type="submit" name="submit" value="<?php echo t("update_account", "update account"); ?>" class="submitInput" />
+                            <input type="hidden" value="1" name="submitme"/>
+                        <?php endif; ?>
+                        <?php if($lockStatus == 1): ?>
+                            <input tabindex="99" type="submit" name="submit" value="<?php echo t("unlock_account", "unlock account"); ?>" class="submitInput" /> 
+                            <small class="requestCode">Request Unlock Code</small>
+                            <input type="hidden" value="1" name="unlockAccount"/>
+                        <?php endif; ?>                   
+                        </li>
+                        <?php if($lockStatus == 1): ?>
+                        <form class="international" method="post" action="<?php echo WEB_ROOT; ?>/account_edit.<?php echo SITE_CONFIG_PAGE_EXTENSION; ?>?rs=1" id="form-join">
+                        <li class="field-container requestCodeHidden" style="display: none;">
+                            <span class="field-name"></span>
+                            <input type="hidden" name="resendCode" value="1"/>
+                            <input tabindex="99" type="submit" name="submit" value="<?php echo t("resend_unlock_code", "resend unlock code"); ?>" class="submitInput" />                       
+                        </li>
+                        <?php endif; ?>
+						<?php else: ?>
+						<li class="field-container">
+                            <span class="field-name"></span>
+							<input tabindex="99" type="submit" name="submit" value="<?php echo t("update_account", "update account"); ?>" class="submitInput" />
+							<input type="hidden" value="1" name="submitme"/>
+						</li>
+                        <?php endif; ?>
+						</form>
+                    </ul>
+                </form>
+            </div>
+        </div>
+    </div>
+    <?php include_once(SITE_TEMPLATES_PATH . '/partial/_banner_right_content.inc.php'); ?>
+    <div class="clear"><!-- --></div>
+</div>
+<?php
+// include footer
+require_once(SITE_TEMPLATES_PATH . '/partial/_footer.inc.php');
+?>

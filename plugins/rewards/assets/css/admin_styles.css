@@ -1,0 +1,1 @@
+.rewardsPPDOptionsSelect{    float: right;    width: 60%;}.left{    float:left;}.ppdOptionsLabel{    margin-right: 18px;  }@media (max-width: 1023px){     /* =======    REWARDS PLUGIN RESPONSIVE CODE   ======= */      .rewardsPPDOptionsSelect {float: none !important; width: 100% !important;}    input.small, textarea.small, select.small {width:100% !important;}}

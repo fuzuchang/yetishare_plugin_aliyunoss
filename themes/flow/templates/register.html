@@ -1,0 +1,291 @@
+<?php
+// make sure user registration is enabled
+if (SITE_CONFIG_ENABLE_USER_REGISTRATION == 'no')
+{
+    coreFunctions::redirect(WEB_ROOT);
+}
+
+// check if user already logged in
+if ($Auth->loggedIn())
+{
+    coreFunctions::redirect(WEB_ROOT . '/account_home.' . SITE_CONFIG_PAGE_EXTENSION);
+}
+
+// setup page
+define("PAGE_NAME", t("register_page_name", "Register"));
+define("PAGE_DESCRIPTION", t("register_meta_description", "Register for an account"));
+define("PAGE_KEYWORDS", t("register_meta_keywords", "register, account, short, url, user"));
+define("TITLE_DESCRIPTION_LEFT", t("register_title_page_description_left", "You're just one step away from taking advantage of our file sharing service!"));
+define("TITLE_DESCRIPTION_RIGHT", t("register_title_page_description_right", ""));
+define("CURRENT_PAGE_KEY", "register");
+
+// register user
+$title = '';
+if (isset($_REQUEST['submitme']))
+{
+    // validation
+    $title               = trim($_REQUEST['title']);
+    $firstname           = trim($_REQUEST['firstname']);
+    $lastname            = trim($_REQUEST['lastname']);
+    $emailAddress        = trim(strtolower($_REQUEST['emailAddress']));
+    $emailAddressConfirm = trim(strtolower($_REQUEST['emailAddressConfirm']));
+    $username            = trim(strtolower($_REQUEST['username']));
+	
+	if(SITE_CONFIG_REGISTER_FORM_ALLOW_PASSWORD == 'yes')
+	{
+		$newPassword		 = trim($_REQUEST['password']);
+		$password2			 = trim($_REQUEST['password2']);
+		$validPassword 		 = passwordPolicy::validatePassword($newPassword);
+		
+		if($newPassword != $password2)
+		{
+			notification::setError(t("passwords_do_not_match", "Your passwords do not match."));
+		}
+		elseif(is_array($validPassword))
+		{
+			notification::setError(implode('<br/>', $validPassword));
+		}
+	}
+
+    if (!strlen($title))
+    {
+        notification::setError(t("please_enter_your_title", "Please enter your title"));
+    }
+    elseif (!strlen($firstname))
+    {
+        notification::setError(t("please_enter_your_firstname", "Please enter your firstname"));
+    }
+    elseif (!strlen($lastname))
+    {
+        notification::setError(t("please_enter_your_lastname", "Please enter your lastname"));
+    }
+    elseif (!strlen($emailAddress))
+    {
+        notification::setError(t("please_enter_your_email_address", "Please enter your email address"));
+    }
+    elseif ($emailAddress != $emailAddressConfirm)
+    {
+        notification::setError(t("your_email_address_confirmation_does_not_match", "Your email address confirmation does not match"));
+    }
+    elseif (!validation::validEmail($emailAddress))
+    {
+        notification::setError(t("your_email_address_is_invalid", "Your email address is invalid"));
+    }
+    elseif (!strlen($username))
+    {
+        notification::setError(t("please_enter_your_preferred_username", "Please enter your preferred username"));
+    }
+    elseif ((strlen($username) < 6) || (strlen($username) > 20))
+    {
+        notification::setError(t("username_must_be_between_6_and_20_characters", "Your username must be between 6 and 20 characters"));
+    }
+    elseif (!validation::validUsername($username))
+    {
+        notification::setError(t("your_username_is_invalid", "Your username can only contact alpha numeric and underscores."));
+    }
+    else
+    {
+        $checkEmail = UserPeer::loadUserByEmailAddress($emailAddress);
+        if ($checkEmail)
+        {
+            // username exists
+            notification::setError(t("email_address_already_exists", "Email address already exists on another account"));
+        }
+        else
+        {
+            $checkUser = UserPeer::loadUserByUsername($username);
+            if ($checkUser)
+            {
+                // username exists
+                notification::setError(t("username_already_exists", "Username already exists on another account"));
+            }
+        }
+    }
+
+    // make sure the username is not reserved
+    if (!notification::isErrors())
+    {
+        if (strlen(SITE_CONFIG_RESERVED_USERNAMES))
+        {
+            $reservedUsernames = explode("|", SITE_CONFIG_RESERVED_USERNAMES);
+            if (in_array($username, $reservedUsernames))
+            {
+                // username is reserved
+                notification::setError(t("username_is_reserved", "Username is reserved and can not be used, please choose another"));
+            }
+        }
+    }
+    
+    // make sure the email domain isn't banned
+    if (!notification::isErrors())
+    {
+        if (strlen(SITE_CONFIG_SECURITY_BLOCK_REGISTER_EMAIL_DOMAIN))
+        {
+            $blockedEmailDomains = explode(",", SITE_CONFIG_SECURITY_BLOCK_REGISTER_EMAIL_DOMAIN);
+            $emailDomain = strtolower(end(explode('@', $emailAddress)));
+            if (in_array($emailDomain, $blockedEmailDomains))
+            {
+                // email domain is not allowed
+                notification::setError(t("email_address_not_allowed", "Registration from email addresses on [[[EMAIL_DOMAIN]]] have been blocked on this site.", array('EMAIL_DOMAIN' => $emailDomain)));
+            }
+        }
+    }
+
+    // check captcha
+    if ((!notification::isErrors()) && (SITE_CONFIG_REGISTER_FORM_SHOW_CAPTCHA == 'yes'))
+    {
+        if (!isset($_REQUEST['g-recaptcha-response']))
+        {
+            notification::setError(t("invalid_captcha", "Captcha confirmation text is invalid."));
+        }
+        else
+        {
+            $rs = coreFunctions::captchaCheck($_REQUEST["g-recaptcha-response"]);
+            if (!$rs)
+            {
+                notification::setError(t("invalid_captcha", "Captcha confirmation text is invalid."));
+            }
+        }
+    }
+
+    // create the account
+    if (!notification::isErrors())
+    {
+		if (SITE_CONFIG_REGISTER_FORM_ALLOW_PASSWORD == 'no')
+		{
+			$newPassword = passwordPolicy::generatePassword();
+		}
+        $newUser     = UserPeer::create($username, $newPassword, $emailAddress, $title, $firstname, $lastname);
+        if ($newUser)
+        {
+            $subject = t('register_user_email_subject', 'Account details for [[[SITE_NAME]]]', array('SITE_NAME' => SITE_CONFIG_SITE_NAME));
+
+            $replacements   = array(
+                'FIRST_NAME' => $firstname,
+                'SITE_NAME'  => SITE_CONFIG_SITE_NAME,
+                'WEB_ROOT'   => WEB_ROOT,
+                'USERNAME'   => $username,
+                'PASSWORD'   => $newPassword
+            );
+            $defaultContent = "Dear [[[FIRST_NAME]]],<br/><br/>";
+            $defaultContent .= "Your account on [[[SITE_NAME]]] has been created. Use the details below to login to your new account:<br/><br/>";
+            $defaultContent .= "<strong>Url:</strong> <a href='[[[WEB_ROOT]]]'>[[[WEB_ROOT]]]</a><br/>";
+            $defaultContent .= "<strong>Username:</strong> [[[USERNAME]]]<br/>";
+            $defaultContent .= "<strong>Password:</strong> [[[PASSWORD]]]<br/><br/>";
+            $defaultContent .= "Feel free to contact us if you need any support with your account.<br/><br/>";
+            $defaultContent .= "Regards,<br/>";
+            $defaultContent .= "[[[SITE_NAME]]] Admin";
+            $htmlMsg        = t('register_user_email_content', $defaultContent, $replacements);
+
+            coreFunctions::sendHtmlEmail($emailAddress, $subject, $htmlMsg, SITE_CONFIG_DEFAULT_EMAIL_ADDRESS_FROM, strip_tags(str_replace("<br/>", "\n", $htmlMsg)));
+
+            // create account welcome notification
+            $content = t('register_account_notification_text', 'Thanks for registering and welcome to your account! Start uploading files straight away by clicking the \'Upload\' button below. Feel free to contact us if you need any help.');
+            $link = WEB_ROOT.'/contact.'.SITE_CONFIG_PAGE_EXTENSION;
+            internalNotification::add($newUser->id, $content, $type = 'entypo-thumbs-up', $link);
+            
+			// Include any plugin includes
+			pluginHelper::includeAppends("registration_complete.php", array('user' => $newUser));
+			
+            // if we came from a file
+            if (isset($_REQUEST['f']))
+            {
+                // upgrades
+                coreFunctions::redirect(WEB_ROOT . "/upgrade." . SITE_CONFIG_PAGE_EXTENSION . "?f=" . urlencode($_REQUEST['f']) . "&i=" . urlencode($newUser->identifier));
+            }
+            else
+            {
+                // for non upgrades
+                coreFunctions::redirect(WEB_ROOT . "/register_complete." . SITE_CONFIG_PAGE_EXTENSION);
+            }
+        }
+        else
+        {
+            notification::setError(t("problem_creating_your_account_try_again_later", "There was a problem creating your account, please try again later"));
+        }
+    }
+}
+
+// include header
+require_once(SITE_TEMPLATES_PATH . '/partial/_header.inc.php');
+?>
+<form class="form" method="post" action="<?php echo WEB_ROOT; ?>/register.<?php echo SITE_CONFIG_PAGE_EXTENSION; ?>" id="form-join">
+<div class="row">
+    <div class="col-md-6 form-element">
+        
+            <?php
+            if (notification::isErrors())
+            {
+                echo notification::outputErrors();
+            }
+            elseif (notification::isSuccess())
+            {
+                echo notification::outputSuccess();
+            }
+            ?>        
+            <div class="input-group"> <span class="input-group-addon"><i class="fa fa-chevron-right"></i></span>
+                <select class="form-control" autofocus="autofocus" tabindex="1" id="title" name="title">
+                    <option disabled selected><?php echo t("title", "title"); ?></option>
+                    <option value="Mr" <?php echo ($title == 'Mr') ? 'SELECTED' : ''; ?>><?php echo t('title_mr', 'Mr'); ?></option>
+                    <option value="Ms" <?php echo ($title == 'Ms') ? 'SELECTED' : ''; ?>><?php echo t('title_ms', 'Ms'); ?></option>
+                    <option value="Mrs" <?php echo ($title == 'Mrs') ? 'SELECTED' : ''; ?>><?php echo t('title_mrs', 'Mrs'); ?></option>
+                    <option value="Miss" <?php echo ($title == 'Miss') ? 'SELECTED' : ''; ?>><?php echo t('title_miss', 'Miss'); ?></option>
+                    <option value="Dr" <?php echo ($title == 'Dr') ? 'SELECTED' : ''; ?>><?php echo t('title_dr', 'Dr'); ?></option>
+                    <option value="Pro" <?php echo ($title == 'Pro') ? 'SELECTED' : ''; ?>><?php echo t('title_pro', 'Pro'); ?></option>
+                </select>
+            </div>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-chevron-right"></i></span>
+                <input type="text" class="form-control" placeholder="<?php echo t("firstname", "firstname"); ?>" tabindex="1" value="<?php echo isset($firstname) ? validation::safeOutputToScreen($firstname) : ''; ?>" id="firstname" name="firstname">
+            </div>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-chevron-right"></i></span>
+                <input type="text" class="form-control" placeholder="<?php echo t("lastname", "lastname"); ?>" tabindex="1" value="<?php echo isset($lastname) ? validation::safeOutputToScreen($lastname) : ''; ?>" id="lastname" name="lastname">
+            </div>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-chevron-right"></i></span>
+                <input type="text" class="form-control" placeholder="<?php echo t("email_address", "email address"); ?>" tabindex="1" value="<?php echo isset($emailAddress) ? validation::safeOutputToScreen($emailAddress) : ''; ?>" id="emailAddress" name="emailAddress">
+            </div>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-chevron-right"></i></span>
+                <input type="text" class="form-control" placeholder="<?php echo t("email_address_confirm", "Email Confirm"); ?>" tabindex="2" value="<?php echo isset($emailAddressConfirm) ? validation::safeOutputToScreen($emailAddressConfirm) : ''; ?>" id="emailAddressConfirm" name="emailAddressConfirm"></label>
+            </div>
+            <div class="input-group"><span class="input-group-addon"><i class="fa fa-chevron-right"></i></span>
+                <input type="text" class="form-control" placeholder="<?php echo t("username", "username"); ?>" tabindex="3" value="<?php echo isset($username) ? validation::safeOutputToScreen($username) : ''; ?>" id="username" name="username" class="uiStyle"></label>
+            </div>	
+			<?php if (SITE_CONFIG_REGISTER_FORM_ALLOW_PASSWORD == 'yes'): ?>
+			<div class="input-group"><span class="input-group-addon"><i class="fa fa-chevron-right"></i></span>
+                <input type="password" class="form-control" placeholder="<?php echo t("password", "password"); ?>" tabindex="4" value="<?php echo validation::safeOutputToScreen($password); ?>" id="password" name="password" class="uiStyle" onFocus="showHideTip(this);"></label>
+            </div>
+			<div class="input-group"><span class="input-group-addon"><i class="fa fa-chevron-right"></i></span>
+                <input type="password" class="form-control" placeholder="<?php echo ucwords(t("repeat_password", "repeat password")); ?>" tabindex="5" value="<?php echo validation::safeOutputToScreen($username); ?>" id="password2" name="password2" class="uiStyle" onFocus="showHideTip(this);"></label>
+            </div>
+			<?php endif; ?>
+            <?php if (SITE_CONFIG_REGISTER_FORM_SHOW_CAPTCHA == 'yes'): ?>
+                <?php echo coreFunctions::outputCaptcha(); ?>
+            <?php endif; ?>
+            <div class="input-group form-buttons"> <span class="input-group-btn">
+                    <button class="btn btn-default" tabindex="99" type="submit" name="submit" value="<?php echo isset($_REQUEST['f']) ? t("proceed_to_payment", "proceed to payment") : t("register", "register"); ?>" id="submitf" style="width:100%;height:60px;"><i class="fa fa-check"></i> <?php echo t("btn_register", "REGISTER"); ?></button>
+                </span> 
+            </div>
+            <?php
+            if (isset($_REQUEST['f']))
+            {
+                echo '<input type="hidden" value="' . htmlentities(trim($_REQUEST['f'])) . '" name="f"/>';
+            }
+            ?>
+            <input type="hidden" value="1" name="submitme"/>
+        </form>
+        <?php echo t('by_clicking_register_you_agree_to_our_terms', "By clicking 'register', you agree to our <a href='terms.[[[SITE_CONFIG_PAGE_EXTENSION]]]'>Terms of service</a>.", array('SITE_CONFIG_PAGE_EXTENSION' => SITE_CONFIG_PAGE_EXTENSION)); ?>
+    </div>
+    <div class="col-md-6">
+        <div class="col-md-12 form-description">
+            <p><?php echo t("register_text", "Please enter your information to register for an account. Your new account password will be sent to your email address."); ?></p>
+            <p><?php echo t("register_text_2", "If you don't receive anything, check your spam filters to ensure emails from this site get through. Emails from this site are sent from [[[SITE_CONFIG_DEFAULT_EMAIL_ADDRESS_FROM]]]", array('SITE_CONFIG_DEFAULT_EMAIL_ADDRESS_FROM' => SITE_CONFIG_DEFAULT_EMAIL_ADDRESS_FROM)); ?></p>
+			<?php
+		// include any plugin includes
+		pluginHelper::includeAppends('social_register_form.php');
+		?> 
+        </div>
+    </div>
+</div>
+<?php
+// include footer
+require_once(SITE_TEMPLATES_PATH . '/partial/_footer.inc.php');
+?>

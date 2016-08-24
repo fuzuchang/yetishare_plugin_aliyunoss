@@ -1,0 +1,429 @@
+<?php
+
+// reload session encase they've just upgraded
+$Auth->reloadSession();
+
+// require login
+$Auth->requireUser(WEB_ROOT . '/login.' . SITE_CONFIG_PAGE_EXTENSION);
+
+// setup order by options
+$orderByOptions = array();
+$orderByOptions['order_by_filename_asc'] = 'Filename ASC';
+$orderByOptions['order_by_filename_desc'] = 'Filename DESC';
+$orderByOptions['order_by_uploaded_date_asc'] = 'Uploaded Date ASC';
+$orderByOptions['order_by_uploaded_date_desc'] = 'Uploaded Date DESC';
+$orderByOptions['order_by_downloads_asc'] = 'Downloads ASC';
+$orderByOptions['order_by_downloads_desc'] = 'Downloads DESC';
+$orderByOptions['order_by_filesize_asc'] = 'Filesize ASC';
+$orderByOptions['order_by_filesize_desc'] = 'Filesize DESC';
+$orderByOptions['order_by_last_access_date_asc'] = 'Last Access Date ASC';
+$orderByOptions['order_by_last_access_date_desc'] = 'Last Access Date DESC';
+
+// Get users account lock status
+$accountLocked = 0;
+$lockStatus    = corefunctions::getUsersAccountLockStatus($Auth->id);
+if(SITE_CONFIG_SECURITY_ACCOUNT_LOCK == 'yes' && $lockStatus == '1')
+{
+    $accountLocked = 1;
+}
+// handle screen messages
+if (isset($_REQUEST['s']))
+{
+    $s = $_REQUEST['s'];
+    $s = validation::safeOutputToScreen($s);
+    notification::setSuccess($s);
+}
+
+// setup page
+define("PAGE_NAME", t("account_home_page_name", "Account Home"));
+define("PAGE_DESCRIPTION", t("account_home_meta_description", "Your Account Home"));
+define("PAGE_KEYWORDS", t("account_home_meta_keywords", "account, home, file, your, interface, upload, download, site"));
+define("FROM_ACCOUNT_HOME", true);
+define("SELECTED_NAVIGATION_LINK", "your_files");
+
+// include header
+require_once(SITE_TEMPLATES_PATH . '/partial/_header_file_manager.inc.php');
+?>
+
+<link rel="stylesheet" href="<?php echo SITE_CSS_PATH; ?>/file_browser_sprite_48px.css" type="text/css" charset="utf-8" />
+<script type="text/javascript" src="<?php echo _CONFIG_SITE_PROTOCOL; ?>://s7.addthis.com/js/300/addthis_widget.js#pubid=ra-57aec4d6bae41d5e"></script>
+
+<?php
+// file manager javascript
+require_once(SITE_TEMPLATES_PATH . '/partial/_account_home_javascript.inc.php');
+?>
+
+<div>
+    <div>
+        <div class="toolbar-container">
+
+            <!-- toolbar -->
+            <div class="col-md-6 col-sm-8 clearfix">
+                <div class="user-info pull-left pull-none-xsm responsiveAlign">
+
+                    <div class="btn-toolbar" role="toolbar">
+                        <div class="btn-group responsiveAlign">
+                            <button class="btn btn-green" type="button" onClick="uploadFiles();
+                                    return false;"><?php echo t('upload_account', 'Upload'); ?> <i class="entypo-upload"></i></button>
+                        </div>
+
+                        <div class="btn-group responsiveAlign">
+                            <button class="btn btn-white" type="button" onClick="showFilterModal();
+                                    return false;">
+                                <?php echo t('filter', 'Filter'); ?> <i class="entypo-search"></i>
+                            </button>
+                        </div>
+                        <?php if($accountLocked == '0'): ?>
+                        <div id="topFolderOptions" class="btn-group responsiveAlign">
+                            <button type="button" class="btn btn-white dropdown-toggle" data-toggle="dropdown">
+                                <?php echo t('file_manager_folder', 'Folder'); ?>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu responsiveMobileMenu" role="menu">
+								<li class="responsiveFolderAlign"><a href="#" onClick="showAddFolderForm();
+                                                                        return false;"><span class="context-menu-icon"><span class="glyphicon glyphicon-plus"></span></span><?php echo t('add_folder', 'Add Folder'); ?></a></li>
+                            </ul>
+                        </div>
+
+                        <div id="subFolderOptions" class="btn-group responsiveAlign" style="display: none;">
+                            <button type="button" class="btn btn-white dropdown-toggle" data-toggle="dropdown">
+                                <?php echo t('file_manager_folder', 'Folder'); ?>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu responsiveMobileMenu" role="menu">
+                                    <li><a href="#" onClick="showAddFolderForm();
+                                                                        return false;"><span class="context-menu-icon"><span class="glyphicon glyphicon-plus"></span></span><?php echo t('add_folder', 'Add Folder'); ?></a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="#" onClick="showAddFolderForm(null, $('#nodeId').val());
+                                                                        return false;"><span class="context-menu-icon"><span class="glyphicon glyphicon-pencil"></span></span><?php echo t('edit_folder', 'Edit'); ?></a></li>
+                                    <li><a href="#" onClick="confirmRemoveFolder($('#nodeId').val());
+                                                                        return false;"><span class="context-menu-icon"><span class="glyphicon glyphicon-remove"></span></span><?php echo t('delete_folder', 'Delete'); ?></a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="#" onClick="downloadAllFilesFromFolder($('#nodeId').val());
+                                                                        return false;"><span class="context-menu-icon"><span class="glyphicon glyphicon-floppy-save"></span></span><?php echo t('download_all_files', 'Download All Files (Zip)'); ?></a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="#" onClick="showFolderSharingForm($('#nodeId').val());
+                                                                        return false;"><span class="context-menu-icon"><span class="glyphicon glyphicon-share"></span></span><?php echo t('share_folder', 'Share Folder'); ?></a></li>
+                            </ul>
+                        </div>
+
+                        <div class="btn-group viewFileLinks responsiveHide" id="viewFileLinks">
+                            <button class="btn btn-white disabled" type="button" onClick="viewFileLinks();
+                                    return false;"><?php echo t('file_manager_links', 'Links'); ?> <i class="entypo-link"></i></button>
+                            <button class="btn btn-white disabled" type="button" onClick="deleteFiles();
+                                    return false;"><?php echo t('file_manager_delete', 'Delete'); ?> <i class="entypo-cancel"></i></button>
+							<span style="display: none;">
+                            <button class="btn btn-white disabled" type="button" onClick="duplicateFiles();
+                                    return false;"><?php echo t('file_manager_duplicate', 'Duplicate'); ?> <i class="entypo-cancel"></i></button>
+							</span>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-6 col-sm-4 clearfix hidden-xs">
+                <div class="list-inline pull-right">
+                    <div class="btn-toolbar" role="toolbar">
+                        <div class="btn-group">
+                            <button class="btn btn-white" type="button" onClick="toggleViewType();
+                                    return false;" id="viewTypeText"><?php echo t('list_view', 'List View'); ?> <i class="entypo-list"></i></button>
+                            <button class="btn btn-white" type="button" onClick="toggleFullScreenMode();
+                                    return false;"><?php echo t('fullscreen', 'Fullscreen'); ?> <i class="entypo-resize-full"></i></button>
+                        </div>
+
+                        <div class="btn-group">
+                            <div class="btn-group">
+                                <button id="filterButton" data-toggle="dropdown" class="btn btn-white dropdown-toggle" type="button">
+                                    <?php echo t('account_home_sort_by', 'Sort By'); ?> <i class="entypo-arrow-combo"></i>
+                                </button>
+                                <ul role="menu" class="dropdown-menu dropdown-white pull-right">
+                                    <li class="disabled"><a href="#"><?php echo t('account_home_sort_by', 'Sort By'); ?></a></li>
+                                    <?php
+                                    foreach ($orderByOptions AS $k => $orderByOption)
+                                    {
+                                        echo '<li><a href="#" onClick="updateSorting(\'' . validation::safeOutputToScreen($k) . '\', \'' . validation::safeOutputToScreen(t($k, $orderByOption)) . '\', this); return false;">' . validation::safeOutputToScreen(t($k, $orderByOption)) . '</a></li>';
+                                    }
+                                    ?>
+                                </ul>
+                                <input name="filterOrderBy" id="filterOrderBy" value="order_by_filename_asc" type="hidden"/>
+                            </div>
+
+                            <div class="btn-group">
+                                <button id="perPageButton" data-toggle="dropdown" class="btn btn-white dropdown-toggle" type="button">
+                                    <?php echo $defaultPerPage; ?> <i class="entypo-arrow-combo"></i>
+                                </button>
+                                <ul role="menu" class="dropdown-menu dropdown-white pull-right per-page-menu">
+                                    <li class="disabled"><a href="#"><?php echo UCWords(t('account_home_per_page', 'Per Page')); ?></a></li>
+                                    <?php
+                                    foreach ($perPageOptions AS $perPageOption)
+                                    {
+                                        //if ($perPageOption == $defaultPerPage)
+                                        echo '<li><a href="#" onClick="updatePerPage(\'' . validation::safeOutputToScreen($perPageOption) . '\', \'' . validation::safeOutputToScreen($perPageOption) . '\', this); return false;">' . validation::safeOutputToScreen($perPageOption) . '</a></li>';
+                                    }
+                                    ?>
+                                </ul>
+                                <input name="perPageElement" id="perPageElement" value="100" type="hidden"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+
+        <div class="panel panel-primary file-manager-container">
+            <div id="fileManagerContainer" class="panel-body">
+                <!-- breadcrumbs -->
+                <div class="row breadcrumbs-container">
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="col-md-6 col-sm-8 clearfix">
+                        <ol id="folderBreadcrumbs" class="breadcrumb bc-3 pull-left">
+                            <li>
+                                <a href="#">
+                                    <i class="entypo-folder"></i><?php echo t('your_uploads', 'Your Uploads'); ?>
+                                </a>
+                            </li>
+                        </ol>
+
+                    </div>
+
+                    <div class="col-md-6 col-sm-4 clearfix hidden-xs">
+                        <ol id="folderBreadcrumbs2" class="breadcrumb bc-3 pull-right">
+                            <li class="active">
+                                <span id="statusText"></span>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <img src="<?php echo SITE_IMAGE_PATH; ?>/file_icons/sprite_48px.png" style="width: 1px; height:1px; position: absolute; top: -99999px;"/>
+                <div class="file-listing-wrapper">
+                    <!-- main file listing section -->
+                    <div id="fileManagerWrapper" class="fileManagerWrapper">
+                        <div id="fileManager" class="fileManager fileManagerIcon"><span class=""><?php echo t('file_manager_loading', 'Loading...'); ?></a></div>
+                        <div class="clear"></div>
+                        <input id="nodeId" type="hidden" value="-1"/>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div id="pagination" class="col-md-12 responsiveAlign"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div id="filePopupContentWrapper" style="display: none;">
+    <div id="filePopupContent" class="filePopupContent"></div>
+</div>
+
+<div id="filePopupContentWrapperNotice" style="display: none;">
+    <div id="filePopupContentNotice" class="filePopupContentNotice"></div>
+</div>
+
+<!-- filter modal -->
+<div class="modal fade" id="filterModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title"><?php echo t('filter_your_files', 'Filter Your Files'); ?></h4>
+            </div>
+
+            <div class="modal-body">
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="filterText" class="control-label"><?php echo t('filter', 'Filter'); ?></label>
+                            <input type="text" class="form-control" name="filterText" id="filterText" placeholder="<?php echo t('file_manager_freetext_search', 'Freetext search...'); ?>" value="<?php echo isset($filterText) ? validation::safeOutputToScreen($filterText) : ''; ?>">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label">&nbsp;</label>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" value="" id="filterFolderId" name="folderId" CHECKED><?php echo t('file_manager_current_folder', 'Current Folder'); ?>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label">&nbsp;</label>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" value="all" id="filterFolderAll" name="folderId"><?php echo t('file_manager_all_files', 'All Files'); ?>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="filterUploadedDateRange" class="control-label"><?php echo t('upload_date', 'Upload Date'); ?></label>
+                            <div class="daterange daterange-inline" data-format="MMMM D, YYYY" data-start-date="<?php echo date("F j, Y", strtotime('-30 day')); ?>" data-end-date="<?php echo date("F j, Y"); ?>" data-callback="">
+                                <i class="entypo-calendar"></i>
+                                <span><?php echo t('file_manager_select_range', 'Select range...'); ?></span>
+                            </div>
+                            <input type="hidden" name="filterUploadedDateRange" id="filterUploadedDateRange" value=""/>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo t('close', 'Close'); ?></button>
+                <button type="button" class="btn btn-default" onClick="clearSearchFilters();
+                        return false;" data-dismiss="modal"><?php echo t('clear_filter', 'Clear Filter'); ?></button>
+                <button type="button" class="btn btn-info" onClick="doFilter(true);
+                                        return false;" data-dismiss="modal"><?php echo t('apply_filter', 'Apply Filter'); ?> <i class="entypo-check"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- add/edit folder -->
+<div id="addEditFolderModal" class="modal fade edit-folder-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <?php echo t('loading_please_wait', 'Loading, please wait...'); ?>
+        </div>
+    </div>
+</div>
+
+<!-- edit file -->
+<div id="editFileModal" class="modal fade edit-file-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <?php echo t('loading_please_wait', 'Loading, please wait...'); ?>
+        </div>
+    </div>
+</div>
+
+<!-- share folder -->
+<div id="shareFolderModal" class="modal fade edit-folder-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <?php echo t('loading_please_wait', 'Loading, please wait...'); ?>
+        </div>
+    </div>
+</div>
+
+<!-- stats -->
+<div id="statsModal" class="modal fade custom-width stats-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <?php echo t('loading_please_wait', 'Loading, please wait...'); ?>
+        </div>
+    </div>
+</div>
+
+<!-- links -->
+<div id="fileLinksModal" class="modal fade file-links-wrapper">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title"><?php echo t('file_urls', 'File Urls'); ?></h2>
+            </div>
+
+            <div class="modal-body">
+                <samp>
+                    <div id="popupContentUrls" class="link-section" onClick="selectAllText(this);
+                            return false;"></div>
+                    <div id="popupContentHTMLCode" class="link-section" style="display: none;" onClick="selectAllText(this);
+                            return false;"></div>
+                    <div id="popupContentBBCode" class="link-section" style="display: none;" onClick="selectAllText(this);
+                            return false;"></div>
+                </samp>
+            </div>
+
+            <div class="modal-footer">
+                <div class="row">
+                    <div class="col-md-8 text-left">
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-info active" onClick="showLinkSection('popupContentUrls', this);
+                                    return false;"><?php echo t('file_urls', 'File Urls'); ?></button>
+                            <button type="button" class="btn btn-info" onClick="showLinkSection('popupContentHTMLCode', this);
+                                    return false;"><?php echo t('urls_html_code', 'HTML Code'); ?></button>
+                            <button type="button" class="btn btn-info" onClick="showLinkSection('popupContentBBCode', this);
+                                    return false;"><?php echo t('urls_bbcode', 'Forum BBCode'); ?></button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo t('close', 'Close'); ?></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- download folder modal -->
+<div id="downloadFolderModal" class="modal fade custom-width download-folder-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title"><?php echo t('file_urls', 'File Urls'); ?></h2>
+            </div>
+
+            <div class="modal-body">
+                <?php echo t('loading_please_wait', 'Loading, please wait...'); ?>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo t('close', 'Close'); ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- view file details modal -->
+<div id="fileDetailsModal" class="modal fade custom-width file-details-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <?php echo t('loading_please_wait', 'Loading, please wait...'); ?>
+        </div>
+    </div>
+</div>
+
+<!-- uploader -->
+<div id="fileUploadWrapper" class="modal fade file-upload-wrapper">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <?php
+            // uploader code
+            require_once(SITE_TEMPLATES_PATH . '/partial/_uploader.inc.php');
+            ?>
+        </div>
+    </div>
+</div>
+
+<!-- general notice modal -->
+<div id="generalModal" class="modal fade custom-width general-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"><?php echo t('close', 'Close'); ?></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<?php
+// include footer
+require_once(SITE_TEMPLATES_PATH . '/partial/_footer_file_manager.inc.php');
+?>

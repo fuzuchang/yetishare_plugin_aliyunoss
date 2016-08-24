@@ -1,0 +1,2547 @@
+@charset 'UTF-8';
+
+/* site styles */
+html, body
+{
+    margin:			0;
+    padding:			0;
+    font-family:		"Lucida Grande", Helvetica, Arial, "Arial Unicode", sans-serif;
+    font-size:			12px;
+    color:			#333;
+    height:			100%;
+    background-color:		#EEEEEE;
+}
+
+.globalPageWrapper
+{
+    margin-left:                auto;
+    margin-right:               auto;
+    width:                      968px;
+}
+
+img
+{
+    border:					none;
+}
+
+a
+{
+    text-decoration:		underline;
+    color:			#326C76;
+    outline:                    none;
+}
+a:hover
+{
+    text-decoration:		none;
+}
+
+textarea
+{
+    font-size:                  12px;
+    font-family:		"Lucida Grande", Helvetica, Arial, "Arial Unicode", sans-serif;
+}
+
+.clear
+{
+    clear:			both;
+}
+
+.clearLeft
+{
+    clear:			left;
+}
+
+.clearRight
+{
+    clear:			right;
+}
+
+.headerBar
+{
+    width:                      100%;
+    padding-bottom:             14px;
+}
+.mainLogo
+{
+    padding-top:		14px;
+    float:                      left;
+}
+
+.mainNavigation
+{
+    float:                      right;
+    padding-top:                28px;
+    text-transform:             lowercase;
+    font-size:                  20px;
+    color:                      #000000;
+}
+.mainNavigation a
+{
+    color:                      #000000;
+}
+
+.mainNavigation a:hover
+{
+    text-decoration: none;
+}
+
+.bodyBar
+{
+    text-align:			center;
+}
+
+.footerBar
+{
+    padding-top:		10px;
+    color:			#777;
+    font-size:                  11px;
+    padding-bottom:		14px;
+    padding-left:               16px;
+}
+.footerBar .footerLinks
+{
+    float:                      left;
+}
+.footerBar .footerLinks .section1, .footerBar .footerLinks .section2
+{
+    display:                    inline-block;
+    vertical-align:             top;
+    width:                      200px;
+    text-transform:             lowercase;
+}
+.footerBar .footerCopyrightText
+{           
+    padding-top:                12px;
+    color:                      #aaa;
+    text-align:                 center;
+}
+.footerBar .footerCopyrightText a
+{
+    text-decoration:            none;
+    color:                      #aaa;
+}
+.footerBar .footerCopyrightText a:hover
+{
+    text-decoration:            underline;
+}
+.footerBar .footerLinks ul
+{
+    line-height: 1.4em;
+    list-style-position: outside;
+    list-style-type: square;
+    margin: 0px 3px 0px 14px;
+    padding: 0 2px 0 5px;
+    text-align: left;
+    text-indent: 2px;
+}
+.footerBar .footerLinks a
+{
+    text-decoration:		underline;
+    color:			#888;
+}
+.footerBar .footerLinks a:hover
+{
+    text-decoration:		none;
+    color:			#333;
+}
+.pageErrors
+{
+    padding:			10px;
+    background-color:		#fff;
+    border: 			2px solid red;
+}
+.pageErrors li
+{
+    list-style: 			none;
+    padding: 				0;
+    margin: 				0;
+    font-size:				14px;
+}
+.errorText
+{
+    color:                      #CD0A0A;
+}
+
+.passwordContainer
+{
+    width:					555px;
+    overflow:				hidden;
+    background-color:		#1C839A;
+    padding-top:			10px;
+    padding-bottom:			10px;
+    color:					#fff;
+}
+
+.shortUrlResult
+{
+    width:					555px;
+    background-color:		#FFF;
+    text-align:				left;
+    margin-bottom: 			32px;
+    text-align:				center;
+    vertical-align:			middle;
+    font-size:				18px;
+    padding-top:			20px;
+    border:					1px solid #555;
+}
+.shortUrlResult a
+{
+    text-decoration:		none;
+    color:					#326C76;
+}
+.shortUrlResult a:hover
+{
+    text-decoration:		underline;
+}
+.shortUrlResultTick
+{
+    float:					right;
+    padding-right:			15px;
+    margin-top:				-4px;
+}
+
+.metaRedirectWrapper
+{
+    padding:				25px;
+    margin-left:			auto;
+    margin-right:			auto;
+    width:					555px;
+}
+.metaRedirect
+{
+    width:					555px;
+    height:					140px;
+    background-color:		#fff;
+    text-align:				left;
+    text-align:				center;
+    font-size:				16px;
+    padding-top:			10px;
+    border:					1px solid #555;
+}
+
+.framedRedirectTopFrame
+{
+    overflow:				hidden;
+}
+.framedRedirectTopFrameWrapper
+{
+    background-repeat:		no-repeat;
+    background-position:	bottom left;
+}
+.framedRedirectTopFrameWrapper .rightContent
+{
+    float:				right;
+    padding-top:			37px;
+    padding-right:			10px;
+}
+.framedRedirectTopFrameWrapper .leftContent
+{
+    float:					left;
+    width:					150px;
+    cursor:					pointer;
+}
+.framedRedirectTopFrameWrapper .rightAdContent
+{
+    float:					right;
+}
+
+.reportUrlBox
+{
+    width:					535px;
+    height:					115px;
+    background-color:		#FFF;
+    text-align:				left;
+    padding:				10px;
+}
+.shortUrlInput
+{
+    padding-top:			28px;
+}
+.shortUrlInputLabel
+{
+    float:					left;
+    width: 					80px;
+    margin-top:				3px;
+}
+.shortUrlButton
+{
+    padding-top:			24px;
+    text-align:				center;
+}
+
+/* popup containers (yui) */
+.yui-overlay,.yui-panel-container{visibility:hidden;position:absolute;z-index:2;}.yui-panel{position:relative;}.yui-panel-container form{margin:0;}.mask{z-index:1;display:none;position:absolute;top:0;left:0;right:0;bottom:0;}.mask.block-scrollbars{overflow:auto;}.masked select,.drag select,.hide-select select{_visibility:hidden;}.yui-panel-container select{_visibility:inherit;}.hide-scrollbars,.hide-scrollbars *{overflow:hidden;}.hide-scrollbars select{display:none;}.show-scrollbars{overflow:auto;}.yui-panel-container.show-scrollbars,.yui-tt.show-scrollbars{overflow:visible;}.yui-panel-container.show-scrollbars .underlay,.yui-tt.show-scrollbars .yui-tt-shadow{overflow:auto;}.yui-panel-container.shadow .underlay.yui-force-redraw{padding-bottom:1px;}.yui-effect-fade .underlay,.yui-effect-fade .yui-tt-shadow{display:none;}.yui-tt-shadow{position:absolute;}.yui-override-padding{padding:0!important;}.yui-panel-container .container-close{overflow:hidden;text-indent:-10000em;text-decoration:none;}.yui-overlay.yui-force-redraw,.yui-panel-container.yui-force-redraw{margin-bottom:1px;} .mask{background-color:#000;opacity:.35;filter:alpha(opacity=35);}.popupContainer .yui-panel-container{padding:0 1px;*padding:2px;}.popupContainer .yui-panel{position:relative;left:0;top:0;border-style:solid;border-width:1px 0;border-color:#808080;z-index:1;*border-width:1px;*zoom:1;_zoom:normal;}.popupContainer .yui-panel .hd,.popupContainer .yui-panel .bd,.popupContainer .yui-panel .ft{border-style:solid;border-width:0 1px;border-color:#808080;margin:0 -1px;*margin:0;*border:0;}.popupContainer .yui-panel .hd{border-bottom:solid 1px #ccc;}.popupContainer .yui-panel .bd,.popupContainer .yui-panel .ft{background-color:#F2F2F2;}.popupContainer .yui-panel .hd{padding:0 10px;font-size:93%;line-height:2;*line-height:1.9;font-weight:bold;color:#000;background:url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) repeat-x 0 -200px;}.popupContainer .yui-panel .bd{padding:10px;}.popupContainer .yui-panel .ft{border-top:solid 1px #808080;padding:5px 10px;font-size:77%;}.popupContainer .container-close{position:absolute;top:5px;right:6px;width:25px;height:15px;background:url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 -300px;cursor:pointer;}.popupContainer .yui-panel-container .underlay{right:-1px;left:-1px;}.popupContainer .yui-panel-container.matte{padding:9px 10px;background-color:#fff;}.popupContainer .yui-panel-container.shadow{_padding:2px 4px 0 2px;}.popupContainer .yui-panel-container.shadow .underlay{position:absolute;top:2px;left:-3px;right:-3px;bottom:-3px;*top:4px;*left:-1px;*right:-1px;*bottom:-1px;_top:0;_left:0;_right:0;_bottom:0;_margin-top:3px;_margin-left:-1px;background-color:#000;opacity:.12;filter:alpha(opacity=12);}.popupContainer .yui-dialog .ft{border-top:none;padding:0 10px 10px 10px;font-size:100%;}.popupContainer .yui-dialog .ft .button-group{display:block;text-align:right;}.popupContainer .yui-dialog .ft button.default{font-weight:bold;}.popupContainer .yui-dialog .ft span.default{border-color:#304369;background-position:0 -1400px;}.popupContainer .yui-dialog .ft span.default .first-child{border-color:#304369;}.popupContainer .yui-dialog .ft span.default button{color:#fff;}.popupContainer .yui-dialog .ft span.yui-button-disabled{background-position:0 -1500px;border-color:#ccc;}.popupContainer .yui-dialog .ft span.yui-button-disabled .first-child{border-color:#ccc;}.popupContainer .yui-dialog .ft span.yui-button-disabled button{color:#a6a6a6;}.popupContainer .yui-simple-dialog .bd .yui-icon{background:url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 0;width:16px;height:16px;margin-right:10px;float:left;}.popupContainer .yui-simple-dialog .bd span.blckicon{background-position:0 -1100px;}.popupContainer .yui-simple-dialog .bd span.alrticon{background-position:0 -1050px;}.popupContainer .yui-simple-dialog .bd span.hlpicon{background-position:0 -1150px;}.popupContainer .yui-simple-dialog .bd span.infoicon{background-position:0 -1200px;}.popupContainer .yui-simple-dialog .bd span.warnicon{background-position:0 -1900px;}.popupContainer .yui-simple-dialog .bd span.tipicon{background-position:0 -1250px;}.popupContainer .yui-tt .bd{position:relative;top:0;left:0;z-index:1;color:#000;padding:2px 5px;border-color:#D4C237 #A6982B #A6982B #A6982B;border-width:1px;border-style:solid;background-color:#FFEE69;}.popupContainer .yui-tt.show-scrollbars .bd{overflow:auto;}.popupContainer .yui-tt-shadow{top:2px;right:-3px;left:-3px;bottom:-3px;background-color:#000;}.popupContainer .yui-tt-shadow-visible{opacity:.12;filter:alpha(opacity=12);}
+
+.popupContainer .yui-panel .bd li
+{
+    padding-bottom:			10px;
+}
+
+.popupContainer
+{
+    display:				none;
+}
+
+.footerAds
+{
+    float:                              right;
+}
+
+.metaRedirectWrapperTopAds
+{
+    text-align:				center;
+    padding-bottom:			30px;
+    padding-top:                        10px;
+}
+
+.metaRedirectWrapperBottomAds
+{
+    text-align:				center;
+    padding-top:			20px;
+    padding-bottom:                     10px;
+}
+
+
+/* V2 */
+.contentPageWrapper
+{
+    margin-left:			auto;
+    margin-right:			auto;
+    width:				100%;
+    padding-bottom:                     12px;
+}
+
+.contentPageWrapper .upgradeSection
+{
+    width:                              175px;
+    display:                            inline-block;
+    vertical-align:                     top;
+}
+
+.contentPageWrapper .upgradeSection .upgradeContent
+{
+    border:                             1px solid #ccc;
+}
+
+.contentPageWrapper .upgradeSection .upgradeContent:hover
+{
+    border:                             1px solid #EE5F00;
+}
+
+.pageSectionMain
+{
+    width:				700px;
+    background-color:                   #FFF;
+    text-align:				left;
+    float:                              left;
+}
+
+.pageSectionMainFull
+{
+    width:				100%;
+    background-color:                   #FFF;
+    text-align:				left;
+}
+
+.pageSectionMainInternal
+{
+    padding:                            20px;
+}
+
+.pageSectionMain .disclaimer
+{
+    padding-top:                        15px;
+}
+
+.fileUploadMain
+{
+    width:				100%;
+    text-align:				left;
+    background:                         #ffffff url('../images/upload_background.jpg') right bottom no-repeat;
+}
+
+.fileUploadMain .fileUploadBadge
+{
+    background:                         url('../images/upload_badge.png') right top no-repeat;
+    float:                              right;
+    width:                              136px;
+    height:                             129px;
+}
+
+.fileUploadMainFull
+{
+    width:				100%;
+    text-align:				left;
+}
+
+.fileUploadMainInternal
+{
+    padding:                            20px;
+}
+
+.fileUploadMain .initialUploadSection
+{
+    cursor:                             pointer;
+}
+
+.fileUploadMain .initialUploadSection .initialUploadText .uploadText, .fileListingWrapper .introText
+{
+    padding-bottom:                     4px;
+    float:                              left;
+}
+
+.fileListingWrapper .globalProgressWrapper
+{
+    width:                              720px;
+    height:                             10px;
+    float:                              left;
+}
+
+.copyAllLinkWrapper
+{
+    float:                              right;
+}
+
+.fileUploadMain .initialUploadSection .initialUploadText .uploadElement
+{
+    background:                         url('../images/upload_element.png') right bottom no-repeat;
+    width:                              640px;
+    height:                             39px;
+    color:                              #CCCCCC;
+    font-size:                          20px;
+    margin-left:                        14px;
+}
+
+.fileUploadMain .initialUploadSection .uploadElement .internal
+{
+    padding-top:                        7px;
+    padding-left:                       45px;
+    font-style:                         italic;
+}
+
+.contentPageWrapper h2
+{
+    color: #007c82;
+    line-height: 0px;
+    padding-bottom: 10px;
+    font-size: 22px;
+    text-transform: lowercase;
+}
+
+#form-join .field-container {
+    left: 120px;
+    position: relative;
+    width: 500px;
+}
+
+#form-join .field-name {
+    font-size: 1.1em;
+    left: -125px;
+    position: absolute;
+    text-align: right;
+    top: 8px;
+    width: 110px;
+}
+
+#form-join .submitInput {
+    width: auto;
+    padding: 5px;
+}
+
+#form-join input.submitInput, #form-join input.cancelInput {
+    background: none repeat scroll 0 0 #0F93C4;
+    border: 1px solid #0F93C4;
+    border-radius: 5px 5px 5px 5px;
+    clear: both;
+    color: #FFFFFF;
+    cursor: pointer;
+    font-family: helvetica;
+    font-weight: bold;
+    height: 32px;
+    margin: 10px 0px 0px 0px;
+    padding: 3px 30px;
+    text-shadow: 0 -1px 1px rgba(0, 0, 0, 0.28);
+    transition: background 0.3s ease 0s;
+}
+
+#form-join input.submitInput:hover, #form-join input.cancelInput:hover {
+    background: none repeat scroll 0 0 #0D7AA4;
+}
+
+#form-join .cancelInput {
+    width: auto;
+    padding: 5px;
+}
+
+#form-join input, #form-join textarea {
+    width: 300px;
+}
+
+#form-join input, #form-join select {
+    position: relative;
+}
+
+#form-join li
+{
+    margin-bottom: 7px;
+}
+
+.loginPanel .submitInput {
+    width: auto;
+    padding: 5px;
+}
+
+ul
+{
+    list-style-type: none;
+}
+
+#form-join .formTip {
+    color: #999999;
+    font-size: 0.9em;
+    height: 57px;
+    left: 322px;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    width: 110px;
+    background-image: url('../images/right_arrow.jpg');
+    background-repeat: no-repeat;
+    padding-left: 8px;
+    background-position: 0px 3px;
+}
+
+.hidden
+{
+    display: none;
+}
+
+.hiddenAlt
+{
+    position: absolute;
+    left: -9999px;
+}
+
+.ui-button
+{
+    padding: 6px;
+}
+
+/* login panel */
+.loginWrapper{
+    margin: 0 auto;
+    position: relative;
+}
+.loginLink{
+}
+.loginLinkSelected{
+    background: #2a2a2a;
+    color: #fff;
+}
+.loginLinkSelected a
+{
+    color: #fff;
+    text-decoration: none;
+}
+.loginPanel{
+    position: absolute;
+    top: 51px;
+    right: -1px;
+    width: 161px;
+    padding: 15px;
+    background: #2a2a2a;
+    font-size: 8pt;
+    font-weight: bold;
+    color: #FFF;
+    display: none;
+    border-bottom: 1px solid #fff;
+    border-left: 1px solid #fff;
+    border-right: 1px solid #fff;
+}
+.loginPanel input
+{
+    width: 95%;
+}
+.loginPanel .submitButton
+{
+    float: right;
+    padding-top: 5px;
+    text-align: right;
+}
+.loginPanel .fieldWrapper
+{
+    float: left;
+    padding-bottom: 5px;
+}
+
+.txtCenter
+{
+    text-align: center;
+}
+
+th
+{
+    color: #fff;
+    background-color: #555555;
+    padding: 7px;
+    cursor: pointer;
+}
+
+.dataTables_wrapper td
+{
+    padding: 6px;
+}
+
+.privatePublicText
+{
+    color: #999999;
+}
+
+.faq ul
+{
+    list-style-type: square;
+    padding-left: 18px;
+}
+
+.rightContentWrapper
+{
+    width:				245px;
+    background-color:                   #fff;
+    text-align:				left;
+    float:                              left;
+    margin-left:                        20px;
+}
+
+.rightContent
+{
+    padding:                            20px;
+}
+
+.rightContent a
+{
+    text-decoration:                    none;
+}
+
+.rightContent a:hover
+{
+    text-decoration:                    underline;
+}
+
+.divOdd, .divEven
+{
+    float:                              left;
+    width:                              100%;
+    overflow:                           auto;
+}
+
+.divOdd
+{
+    background-color:                   #ccc;
+    color:                              #fff;
+}
+
+.divOdd a
+{
+    color:                              #fff;
+}
+
+.divEven
+{
+    background-color:                   #fff;
+}
+
+#termsContent
+{
+    font-size:                          11px;
+}
+
+.sliderContent
+{
+    position:                           absolute;
+    width:                              887px;
+    border-bottom:                      20px solid #dedede;
+    border-left:                        20px solid #dedede;
+    border-right:                       20px solid #dedede;
+    font-size:                          10px;
+}
+.sliderContent table
+{
+    background-color:                   #fff;
+}
+.sliderContent label
+{
+    font-weight:                        bold;
+}
+.sliderContent tr
+{
+    cursor:                             default;
+}
+.rowSelected
+{
+    background-color:                   #dedede;
+}
+
+.htmlCode
+{
+    font-family:  "Courier New",
+        Courier,
+        monospace,
+        Helvetica;
+}
+
+.homePageSpacer
+{
+    padding-top:                        6px;
+}
+
+.fileUploadContent
+{
+    width:				700px;
+    text-align:				left;
+    background:                         #ffffff;
+    float:                              left;
+}
+
+.fileUploadContentInternal
+{
+    padding:                            20px;
+}
+
+.fileUploadContentInternal p
+{
+    width:                              95%;
+}
+
+.fileupload-buttonbar .ui-button input {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    border: solid transparent;
+    border-width: 0 0 100px 200px;
+    opacity: 0;
+    filter: alpha(opacity=0);
+    -o-transform: translate(250px, -50px) scale(1);
+    -moz-transform: translate(-300px, 0) scale(4);
+    direction: ltr;
+    cursor: pointer;
+}
+
+.fileinput-button {
+    overflow: hidden;
+}
+
+/* Fix for IE 6: */
+*html .fileinput-button {
+    padding: 2px 0;
+}
+
+/* Fix for IE 7: */
+*+html .fileinput-button {
+    padding: 2px 0;
+}
+
+.fileupload-buttonbar {
+    padding: 0.2em 0.4em;
+}
+
+.fileupload-buttonbar .ui-button {
+    vertical-align: middle;
+}
+
+.fileupload-content {
+    border-width: 0px;
+}
+
+.fileupload-content .ui-progressbar {
+    width: 100%;
+    height: 10px;
+}
+
+.fileupload-content .ui-progressbar .ui-progressbar-value {
+    background: url(../images/progress_bar.gif);
+    border: 1px solid #4297D7;
+}
+
+.fileupload-content .fileupload-progressbar {
+    margin: 10px 0;
+}
+
+.fileupload-content .initialUploadText {
+    font-size: 24px;
+}
+
+.fileupload-progresstext
+{
+    color: #999;
+    width:720px;
+}
+
+.files
+{
+    border-bottom: 1px solid #E2E4FF;
+}
+
+.files, .addFileRow {
+    border-collapse: collapse;
+}
+
+.files tr:hover
+{
+    background-color: #f2e8da;
+}
+
+.files td, .addFileRow td {
+    padding-top: 3px;
+    border-spacing: 3px;
+}
+
+.files .cancel, .addFileRow .cancel
+{
+    width: 30px;
+    text-align: center;
+}
+
+.files .cancel
+{
+    height: 39px;
+}
+
+.addFileRow .cancel
+{
+    height: 29px;
+}
+
+.files .name, .addFileRow .name, .files .url a  {
+    text-align: left;
+    font-size: 14px;
+}
+
+.files .url
+{
+    width: 500px;
+}
+
+.files .rightArrow
+{
+    width: 14px;
+}
+
+.addFileRow td
+{
+    border-bottom: 1px solid #eee;
+}
+
+.fileupload-content .fileListingWrapper .fileSectionFooterText
+{
+    padding-top: 10px;
+}
+
+.sliderContent a
+{
+    text-decoration:                    none;
+}
+
+.sliderContent .odd
+{
+    border-top:                         1px solid #fff;
+    padding:                            5px;
+}
+
+.sliderContent .even
+{
+    border-top:                         1px solid #fff;
+    padding:                            5px;
+}
+
+.fileupload-content .fileListingWrapper .files td, .fileupload-content .fileListingWrapper .files td
+{
+    border-top: 1px solid #E2E4FF;
+}
+
+.ui-state-disabled .ui-state-disabled {
+    opacity: 1;
+    filter: alpha(opacity=100);
+}
+
+.ui-state-disabled input {
+    cursor: default;
+}
+
+.template-upload .preview
+{
+    text-align: right;
+    padding-right: 3px;
+}
+
+.sliderContent tr:hover, .sliderContent td:hover
+{
+    background-color:                   #fff;
+    cursor:                             default;
+}
+
+.fileupload-content .fileListingWrapper
+{
+    width: 96%;
+}
+
+.fileupload-content .baseText
+{
+    float:                              left;
+    color:                              #aaaaaa;
+    width:                              95%;
+}
+
+.fileupload-content .uploadFooter
+{
+    padding-top:                        18px;
+}
+
+.fileupload-content .fileListingWrapper .fileSectionFooterText .uploadButton
+{
+    float:                              right;
+    background:                         url('../images/upload_queue_button.png') right top no-repeat;
+    width:                              155px;
+    height:                             39px;
+    cursor:                             pointer;
+}
+
+.fileupload-content .fileListingWrapper .fileSectionFooterText .uploadProcessingButton
+{
+    float:                              right;
+    background:                         url('../images/processing_button.png') right top no-repeat;
+    width:                              155px;
+    height:                             39px;
+}
+
+.files .template-download:hover
+{
+    background-color:                   #dedede;
+    cursor:                             pointer;
+}
+
+.fileListingWrapper .urlOff
+{
+    background:                         url('../images/blue_down_arrow.png') 98% 55% no-repeat;
+}
+
+.accountStateTable
+{
+    border-bottom:                      1px solid #bbb;
+    border-collapse:                    collapse;
+    width:                              100%;
+}
+
+.accountStateTable td
+{
+    padding:                            6px;
+    border-top:                         1px solid #bbb;
+    border-right:                       1px solid #bbb;
+}
+
+.accountStateTable .first
+{
+    background-color:                   #555;
+    color:                              #fff;
+    font-weight:                        bold;
+    width:                              160px;
+}
+
+.upgradeContent
+{
+    width:				100%;
+    text-align:				left;
+    background:                         #ffffff;
+    float:                              left;
+}
+
+.upgradeContentInternal
+{
+    padding:                            10px;
+}
+
+.upgradeContentInternal p
+{
+    width:                              95%;
+}
+
+.upgradeContentInternal div
+{
+    text-align:                         center;
+}
+
+.upgradeContentInternal .period
+{
+    font-size:                          24px;
+    font-weight:                        bold;
+    padding-bottom:                     1px;
+}
+.upgradeContentInternal .premium
+{
+    font-size:                          20px;
+    padding-bottom:                     10px;
+}
+.upgradeContentInternal .totalPrice
+{
+    font-size:                          24px;
+    font-weight:                        bold;
+    padding-bottom:                     4px;
+    color:                              #EE5F00;
+}
+.upgradeContentInternal .pricePerDay
+{
+    font-size:                          14px;
+    padding-bottom:                     12px;
+    color:                              #888;
+}
+.upgradeContentInternal .paymentButton
+{
+    padding-bottom:                     6px;
+}
+.upgradeContentInternal .secure
+{
+    font-size:                          10px;
+}
+
+.formattedList
+{
+    line-height:                        1.4em;
+    list-style-position:                outside;
+    list-style-type:                    square;
+    margin:                             0px 3px 0px 14px;
+    padding:                            0 2px 0 5px;
+    text-align:                         left;
+    text-indent:                        2px;
+}
+
+.accountBenefitWrapper
+{
+    float:                              left;
+    overflow:                           hidden;
+    width:                              33%;
+}
+
+.accountBenefit
+{
+    background:                         url('../images/green_tick_small_alt.png') left center no-repeat;
+    width:                              100%;
+    padding-left:                       22px;
+    padding-top:                        3px;
+    padding-bottom:                     3px;
+}
+
+.homepageInfoWrapper
+{
+    float:                              left;
+    overflow:                           hidden;
+    width:                              320px;
+    padding-right:                      20px;
+    padding-bottom:                     16px;
+}
+
+.homepageInfoWrapper .homepageInfo
+{
+    padding-top:                        3px;
+    padding-bottom:                     3px;
+    float:                              left;
+    width:                              220px;
+}
+
+.homepageInfoWrapper .homepageInfo .homepageInfoTitle
+{
+    float:                              left;
+    clear:                              both;
+    font-weight:                        bold;
+    font-size:                          14px;
+    padding-bottom:                     8px;
+}
+
+.homepageInfoWrapper .homepageInfo .homepageInfoText
+{
+    float:                              left;
+    clear:                              both;
+    font-size:                          14px;
+    color:                              #666;
+}
+
+.homepageInfoWrapper .icon1, .homepageInfoWrapper .icon2, .homepageInfoWrapper .icon3, .homepageInfoWrapper .icon4
+{
+    float:                              right;
+    height:                             100px;
+    width:                              100px;
+}
+
+.homepageInfoWrapper .icon1
+{
+    background:                         url('../images/home_image_1.png') right top no-repeat;
+}
+.homepageInfoWrapper .icon2
+{
+    background:                         url('../images/home_image_2.png') right top no-repeat;
+}
+.homepageInfoWrapper .icon3
+{
+    background:                         url('../images/home_image_3.png') right top no-repeat;
+}
+.homepageInfoWrapper .icon4
+{
+    background:                         url('../images/home_image_4.png') right top no-repeat;
+}
+
+/* V1.2 STYLES */
+.downloadPageTable
+{
+    background: url("../images/table_bg.gif") repeat-y scroll 0 0 transparent;
+    margin: 0 auto 12px;
+    overflow: hidden;
+    width: 682px;
+}
+
+.downloadPageTable table
+{
+    background: url("../images/table_top.gif") no-repeat scroll 0 0 transparent;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.downloadPageTable th.descr
+{
+    background: url("../images/clock_small.png") no-repeat scroll 14px 50% transparent;
+    padding-left: 57px;
+    text-align: left;
+    width: 220px;
+}
+
+.downloadPageTable th
+{
+    border-bottom: 1px solid #E2E2E2;
+    height: 57px;
+    background-color: transparent;
+    width: 180px;
+    color: #333333;
+    font-weight: normal;
+}
+
+.downloadPageTable td.descr
+{
+    padding: 12px 0 11px 15px;
+    text-align: left;
+    width: 275px;
+}
+
+.downloadPageTable td
+{
+    border-bottom: 1px solid #E2E2E2;
+    padding: 6px 0;
+    text-align: center;
+}
+
+.downloadPageTable .link
+{
+    background: url("../images/download.png") no-repeat scroll 0 0 transparent;
+    color: #FFFFFF;
+    display: block;
+    font-size: 11px;
+    font-weight: bold;
+    height: 28px;
+    line-height: 28px;
+    margin: 0 auto;
+    overflow: hidden;
+    text-align: center;
+    text-shadow: 1px 1px 0 #565656;
+    width: 154px;
+    text-decoration: none;
+}
+
+.downloadPageTable .link:hover
+{
+    text-decoration: underline;
+}
+
+.downloadPageTable .premiumBtn
+{
+    background: url("../images/download.png") no-repeat scroll 0 100% transparent;
+}
+
+.download-timer
+{
+    font-weight: bold;
+    text-align: center;
+    color: #333;
+}
+
+/* V2.1 STYLES */
+.saveToFolder
+{
+    font-size: 10px;
+}
+
+.loginPanel .submitInput
+{
+    width: auto;
+    border: 1px solid #CCCCCC;
+    color: #4C4C4C;
+    font-size: 1.1em;
+    padding: 5px;
+    position: relative;
+}
+
+.loginPanel .forgotPassword
+{
+    float: left;
+    color: #fff;
+    font-weight: normal;
+    padding-top: 11px;
+}
+
+.loginPanel .forgotPassword a
+{
+    color: #fff;
+    font-weight: normal;
+    text-decoration: underline;
+}
+
+.loginPanel .forgotPassword a:hover
+{
+    text-decoration: none;
+}
+
+.pageSuccess
+{
+    padding:			10px;
+    background-color:		#fff;
+    border: 			2px solid green;
+}
+.pageSuccess li
+{
+    list-style: 			none;
+    padding: 				0;
+    margin: 				0;
+    font-size:				14px;
+}
+
+.captchaPageTable
+{
+    margin: 0 auto 12px;
+    overflow: hidden;
+    width: 600px;
+    border: 1px solid #E2E2E2;
+    background-color: #FEFEFE;
+}
+
+.captchaPageTable table
+{
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.captchaPageTable td.descr
+{
+    padding: 12px 0 11px 15px;
+    text-align: left;
+    width: 275px;
+}
+
+.captchaPageTable td
+{
+    padding: 6px 0;
+    text-align: center;
+}
+
+.captchaPageTable .link:hover
+{
+    text-decoration: underline;
+}
+
+div#demoBanner
+{
+    background-color: #333333;
+    width: 100%;
+    text-align: center;
+    padding: 7px;
+    font-weight: bold;
+    color: #ffffff;
+    opacity:0.5;
+    filter:alpha(opacity=50); /* For IE8 and earlier */
+}
+
+div#demoBanner span
+{
+    cursor: pointer;
+}
+
+div#demoBanner a
+{
+    color: #ffffff;
+}
+
+div#demoBanner:hover
+{
+    opacity:1;
+    filter:alpha(opacity=100); /* For IE8 and earlier */
+}
+
+/* V3.0 STYLES */
+.footerMultiLanguageSwitcherWrapper
+{
+    width: 100%;
+    text-align:                 center;
+    margin-top: 12px;
+}
+.footerMultiLanguageSwitcher
+{
+    padding:                6px;
+    color:                      #aaa;
+    background-color: #ffffff;
+    margin-left: auto;
+    margin-right: auto;
+    display: table;
+}
+
+.footerMultiLanguageSwitcher img
+{
+    margin: 0px;
+}
+
+th
+{
+    border-bottom: 1px solid #BBBBBB;
+    border-right: 1px solid #BBBBBB;
+}
+
+.dataTables_wrapper td
+{
+    border-bottom: 1px solid #CDCDCD;
+    border-right: 1px solid #CDCDCD;
+}
+
+.dataTables_wrapper table
+{
+    border-left: 1px solid #CDCDCD;
+}
+
+.alignCenter
+{
+    text-align: center;
+}
+
+.contentPageWrapper .dataTables_filter
+{
+    width: 80%;
+}
+
+.contentPageWrapper .dataTables_length
+{
+    width: 20%;
+}
+
+.ui-dialog .ui-dialog-buttonpane button
+{
+    border: 1px solid #79b7e7;
+    background: #d0e5f5 url(../images/jquery_ui/ui-bg_glass_75_d0e5f5_1x400.png) 50% 50% repeat-x;
+    font-weight: bold;
+    color: #1d5987;
+    padding: 1px;
+}
+
+.popupForm input
+{
+    width: 96%;
+    padding: 5px;
+}
+
+.popupForm .amountInfo
+{
+    padding-top: 12px;
+}
+
+/* V3.1 STYLES */
+.homeTabs, .statsTabs
+{
+    background: none;
+    padding: 0px;
+    border: none;
+}
+
+.homeTabs .ui-tabs-panel, .statsTabs .ui-tabs-panel
+{
+    padding: 0px;
+    border: 1px solid #fff;
+    border-top-right-radius: 5px;
+}
+
+.homeTabs .ui-widget-header, .statsTabs .ui-widget-header
+{
+    background: none;
+    border: none;
+    font-weight: normal;
+}
+
+.homeTabs .ui-tabs-nav, .statsTabs .ui-tabs-nav
+{
+    padding: 0px;
+}
+
+.homeTabs .ui-tabs-nav li, .statsTabs .ui-tabs-nav li
+{
+    border-bottom: 1px solid #FFFFFF;
+}
+
+.homeTabs .ui-state-hover a, .homeTabs .ui-state-default a, .homeTabs .ui-state-active a, .statsTabs .ui-state-hover a, .statsTabs .ui-state-default a, .statsTabs .ui-state-active a
+{
+    font-weight: normal;
+}
+
+.homeTabs .ui-state-default a, .statsTabs .ui-state-default a
+{
+    color: #777;
+}
+
+.homeTabs .ui-state-active a, .statsTabs .ui-state-active a
+{
+    color: #E17009;
+}
+
+.homeTabs .ui-state-default, .statsTabs .ui-state-default
+{
+    border-top: 1px solid transparent;
+    border-right: 1px solid transparent;
+    border-left: 1px solid transparent;
+}
+
+.homeTabs .ui-state-hover, .statsTabs .ui-state-hover
+{
+    border-top: 1px solid #aaa;
+    border-right: 1px solid #aaa;
+    border-left: 1px solid #aaa;
+}
+
+.homeTabs .ui-state-active, .statsTabs .ui-state-active
+{
+    border-top: 1px solid #fff;
+    border-right: 1px solid #fff;
+    border-left: 1px solid #fff;
+}
+
+.loginWrapper
+{
+    z-index: 999;
+}
+
+.urlUploadMain
+{
+    width:				100%;
+    text-align:				left;
+    background:                         #ffffff url('../images/upload_background.jpg') right bottom no-repeat;
+}
+
+.urlUploadMain .fileUploadBadge
+{
+    background:                         url('../images/upload_badge.png') right top no-repeat;
+    float:                              right;
+    width:                              136px;
+    height:                             129px;
+}
+
+.urlUploadMain
+{
+    width:				100%;
+    text-align:				left;
+}
+
+.urlUploadMainInternal
+{
+    padding:                            20px;
+}
+
+.urlUploadMain .initialUploadSection
+{
+    cursor:                             pointer;
+}
+
+.urlUploadMain .inputElement
+{
+    width: 78%;
+}
+
+.urlUploadMain textarea
+{
+    border: 1px solid #C0C0C0;
+    padding: 5px;
+    font-size: 14px;
+    width: 100%;
+    height: 100px;
+}
+
+.urlUploadMain .fileListingWrapper
+{
+    width: 96%;
+}
+
+.urlUploadMain .urlUploadFooter
+{
+    padding-top:                        8px;
+    width: 79%;
+}
+
+.urlUploadMain .baseText
+{
+    float:                              left;
+    color:                              #aaaaaa;
+}
+
+.urlUploadMain .transferFilesButton
+{
+    float:                              right;
+    background:                         url('../images/transfer_files_button.png') right top no-repeat;
+    width:                              155px;
+    height:                             39px;
+    cursor:                             pointer;
+}
+
+.urlUploadMain .fileSection .urls
+{
+    border-bottom: 1px solid #E2E4FF;
+}
+
+.urlUploadMain .fileSection .urls, .addFileRow {
+    border-collapse: collapse;
+}
+
+.urlUploadMain .fileSection .urls tr:hover
+{
+    background-color: #f2e8da;
+}
+
+.urlUploadMain .fileSection .urls td
+{
+    padding-top: 3px;
+    border-spacing: 3px;
+}
+
+.urlUploadMain .fileSection .urls .cancel
+{
+    width: 30px;
+    text-align: center;
+    height: 39px;
+}
+
+.urlUploadMain .fileSection .urls .name, .urlUploadMain .fileSection .urls .url a
+{
+    text-align: left;
+    font-size: 14px;
+}
+
+.urlUploadMain .fileSection .urls .url
+{
+    width: 500px;
+}
+
+.urlUploadMain .fileSection .urls .rightArrow
+{
+    width: 14px;
+}
+
+.urlUploadMain .fileSection .urls td
+{
+    border-top: 1px solid #E2E4FF;
+}
+
+.urlUploadMain .fileSection .urls .template-download:hover
+{
+    background-color:                   #dedede;
+    cursor:                             pointer;
+}
+
+.urlUploadMain .fileSection .urls .template-download .sliderContent tr:hover
+{
+    background-color:                   #ffffff;
+}
+
+.urlUploadMain .urlFileListingWrapper
+{
+    width: 96%;
+}
+
+.urlUploadMain .urlFileListingWrapper .urlOff
+{
+    background:                         url('../images/blue_down_arrow.png') 98% 55% no-repeat;
+}
+
+.urlUploadMain .urlFileListingWrapper .introText
+{
+    padding-bottom:                     4px;
+    float:                              left;
+}
+
+.urlUploadMain .urlFileListingWrapper .fileSectionFooterText
+{
+    padding-top: 10px;
+}
+
+.sliderContent
+{
+    z-index: 999;
+}
+
+.tabsHover .ui-state-active
+{
+    border-left: 1px solid #C0DDF4;
+    border-right: 1px solid #C0DDF4;
+    border-top: 1px solid #C0DDF4;
+}
+
+.tabsHover .ui-tabs-panel
+{
+    padding: 0px;
+    border: 1px solid #C0DDF4;
+    border-top-right-radius: 5px;
+}
+
+/* V3.3 STYLES */
+.progress {
+    background-color: #F7F7F7;
+    background-image: linear-gradient(to bottom, #F5F5F5, #F9F9F9);
+    background-repeat: repeat-x;
+    border-radius: 4px 4px 4px 4px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset;
+    height: 10px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+    overflow: hidden;
+}
+.progress .bar {
+    -moz-box-sizing: border-box;
+    background-color: #0E90D2;
+    background-image: linear-gradient(to bottom, #149BDF, #0480BE);
+    background-repeat: repeat-x;
+    box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.15) inset;
+    color: #FFFFFF;
+    float: left;
+    font-size: 12px;
+    height: 100%;
+    text-align: center;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+    transition: width 0.6s ease 0s;
+    width: 0;
+}
+.progress .bar + .bar {
+    box-shadow: 1px 0 0 rgba(0, 0, 0, 0.15) inset, 0 -1px 0 rgba(0, 0, 0, 0.15) inset;
+}
+.progress-striped .bar {
+    background-color: #149BDF;
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, transparent 75%, transparent);
+    background-size: 40px 40px;
+}
+
+#additionalOptionsWrapper input
+{
+    padding: 5px;
+}
+
+#additionalOptionsWrapper .pageSectionMainFull
+{
+    background-color: #F6F6F6;
+}
+
+#additionalOptionsWrapper .pageSectionMainFull .saveButton
+{
+    cursor: pointer;
+}
+
+.showAdditionalOptionsLink
+{
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.showAdditionalOptionsLink:hover
+{
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#additionalOptionsWrapper .itemLeft, #additionalOptionsWrapper .itemRight
+{
+    width: 300px;
+}
+
+#additionalOptionsWrapper .itemLeft
+{
+    float: left;
+    padding-right: 0px;
+}
+
+#additionalOptionsWrapper .itemRight
+{
+    float: right;
+    padding-left: 0px;
+}
+
+#additionalOptionsWrapper input
+{
+    width: 170px;
+}
+
+/* V3.4 STYLES */
+#urlUpload .progressWrapper
+{
+    float: right;
+    margin-right: 4px;
+}
+
+#urlUpload .progressWrapper .progressText
+{
+    color: #999999;
+    font-size: 12px;
+}
+
+#form-join .form-content
+{
+    margin-left: 120px;
+    margin-top: 10px;
+}
+
+input[type="text"], input[type="password"], textarea, select {
+    background-image: none;
+    border: 1px solid #CCCCCC;
+    border-radius: 3px 3px 3px 3px;
+    padding: 6px;
+}
+
+#form-join .small
+{
+    width: 100px;
+}
+
+#form-join .medium
+{
+    width: 200px;
+}
+
+#form-join .large
+{
+    width: 300px;
+}
+
+#form-join input:focus, #form-join textarea:focus, #form-join select:focus
+{
+    border-color: #A6C9E2;
+}
+
+.fileManagerWrapperFullScreen
+{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    overflow: hidden;
+    background-color: #EEEEEE;
+}
+
+.fileManagerWrapper, .fileManagerWrapperFullScreen
+{
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.fileManagerWrapperFullScreen
+{
+    padding: 5px;
+}
+
+.fileManagerWrapperFullScreen .fileManager .icon .fileListing li
+{
+    margin: 0px 8px 8px 0;
+}
+
+.fileManagerWrapper .fileManager .icon .fileListing li
+{
+    margin: 5px 10px 5px 0;
+}
+
+.fileManager .fileManagerLoading
+{
+    text-align: center;
+    padding-top: 100px;
+    width: 96%;
+}
+
+.fileManagerWrapper .fileManager, .fileManagerWrapperFullScreen .fileManager
+{
+    display: inline-block;
+    width: 100%;
+}
+
+.fileManagerWrapper .fileListing, .fileManagerWrapperFullScreen .fileListing
+{
+    padding: 0px;
+    margin: 0px;
+}
+
+.fileManagerWrapper .fileManagerIcon .fileListing
+{
+    padding: 7px 0 0 7px;
+}
+
+.fileManagerIcon .fileListing li .thumb
+{
+    height: 60px;
+    position: relative;
+}
+
+.fileManagerIcon .fileListing li .thumb img
+{
+    position:absolute;
+    top:0;
+    bottom:0;
+    left: 0;
+    right: 0;
+    margin:auto;
+}
+
+.fileManagerIcon .fileListing li
+{
+    background: none repeat scroll 0 0 #FCFCFC;
+    border: 1px solid #ccc;
+    display: inline-block;
+    margin: 0px 7px 7px 0;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    -khtml-border-radius: 2px;
+    border-radius: 2px;
+}
+
+.fileManagerIcon .fileListing li:hover
+{
+    border-color: #BBBBBB;
+}
+
+.fileManagerIcon .fileListing li span.filename
+{
+    display: block;
+    margin-top: 5px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100px;
+    white-space: nowrap;
+}
+
+.fileManagerList .fileListing li span.filename
+{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.fileManagerWrapper .fileManagerList .fileListing li span.filename
+{
+    width: 400px;
+}
+
+.fileManagerWrapperFullScreen .fileManagerList .fileListing li span.filename
+{
+    width: 65%;
+    white-space: normal;
+}
+
+.fileManagerIcon .fileListing li:hover, .fileManagerList .fileListing li:hover
+{
+    background-color: #E7F0FA;
+}
+
+.fileManagerIcon .fileListing .selected a, .fileManagerList .fileListing .selected a
+{
+    color: #fff;
+}
+
+.fileManagerIcon .fileListing .selected, .fileManagerIcon .fileListing .selected:hover, .fileManagerList .fileListing .selected, .fileManagerList .fileListing .selected:hover
+{
+    background-color: #5B9BDA;
+    border-color: #2975C0;
+    color: #fff;
+}
+
+.fileManagerIcon .fileListing li .filesize, .fileManagerIcon .fileListing li .fileUploadDate, .fileManagerIcon .fileListing li .thumbList, .fileManagerList .fileListing li .thumbIcon
+{
+    display: none;
+}
+
+.fileManagerIcon .fileListing li .thumbIcon, .fileManagerList .fileListing li .thumbList
+{
+    display: inline-block;
+}
+
+.fileManagerIcon .fileListing li .thumbIcon
+{
+    height: 64px;
+
+    /* Internet Explorer 10 */
+    display:-ms-flexbox;
+    -ms-flex-pack:center;
+    -ms-flex-align:center;
+
+    /* Firefox */
+    display:-moz-box;
+    -moz-box-pack:center;
+    -moz-box-align:center;
+
+    /* Safari, Opera, and Chrome */
+    display:-webkit-box;
+    -webkit-box-pack:center;
+    -webkit-box-align:center;
+
+    /* W3C */
+    display:box;
+    box-pack:center;
+    box-align:center;
+}
+
+.fileManagerIcon .fileListing li .thumbIcon img
+{
+    display: inline-block;
+}
+
+.fileManagerList .fileListing li .filesize, .fileManagerList .fileListing li .fileUploadDate
+{
+    float: right;
+    text-align: right;
+}
+
+.fileManagerList .fileListing li .filename, .fileManagerList .fileListing li .filesize, .fileManagerList .fileListing li .fileUploadDate
+{
+    vertical-align: top;
+    display: inline-block;
+    padding: 3px;
+}
+
+.fileManagerList .fileListing li .filesize
+{
+    width: 70px;
+}
+
+.fileManagerList .fileListing li
+{
+    padding: 3px;
+    cursor: pointer;
+    height: 24px;
+    border-bottom: 1px solid #CCCCCC;
+}
+
+.fileManager .fileListing li .thumbList
+{
+    width: 25px;
+}
+
+.fileManagerMain .folderTreeview, .fileManagerMain .fileManagerCell
+{
+    float: left;
+    width: 100%;
+}
+
+.fileManagerMain .folderTreeview
+{
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -khtml-border-radius: 3px;
+    border-radius: 3px;
+    border: 1px solid #CCCCCC;
+    background-color: #fff;
+    overflow: hidden;
+    padding-left: 3px;
+    padding-right: 3px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+.fileManagerWrapper .fileManagerMain .folderTreeview, .fileManagerMain .fileManagerMainTable .folderTreeCell
+{
+    width: 272px;
+}
+
+.fileManagerWrapperFullScreen .fileManagerMain .folderTreeview
+{
+    width: 300px;
+    height: 97%;
+}
+
+.fileManagerWrapper .fileManagerMain .fileManagerCell .fileManager
+{
+    float: left;
+    width: 99.6%;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -khtml-border-radius: 3px;
+    border-radius: 3px;
+    border: 1px solid #CCCCCC;
+    background-color: #fff;
+}
+
+.fileManagerWrapper .fileManagerMain .fileManagerCell .fileManagerList
+{
+    padding: 0px;
+}
+
+.fileManagerMainTable .dividerCell
+{
+    width: 6px;
+}
+
+.fileManagerMain .folderTreeview
+{
+    height: 590px;
+    overflow: auto;
+}
+
+.fileManagerMain .fileManagerCell .fileManager
+{
+    height: 525px;
+    overflow: auto;
+}
+
+.fileManagerMain .fileManagerMainTable td
+{
+    vertical-align: top;
+}
+
+.fileManagerMain .fileManagerMainTable .folderTreeCell, .fileManagerMain .fileManagerMainTable .fileManagerCell
+{
+    overflow: hidden;
+    height: 597px;
+}
+
+.pageSectionFileManagerFull
+{
+    width:				100%;
+    text-align:			left;
+}
+
+.fileManagerMain .statusBar
+{
+    font-size: 11px;
+    padding-left: 5px;
+    padding-top: 5px;
+}
+
+.fileManagerWrapperFullScreen .fileManagerMain
+{
+    height: 100%;
+}
+
+.fileManagerWrapperFullScreen .fileManagerMain .fileManagerMainTable
+{
+    height: 96%;
+}
+
+.fileManagerMain .fileManagerCell .customFilter
+{
+    margin-bottom: 3px;
+}
+
+.fileManagerMain .fileManagerCell .customFilter .filterElements
+{
+    padding: 3px;
+}
+
+.fileManagerMain .fileManagerCell .customFilter .filterElements .button-container
+{
+    display: inline-block;
+    vertical-align: top;
+    padding-left: 6px;
+}
+
+.fileManagerMain .fileManagerCell .customFilter .filterElements .button-container .button
+{
+    padding: 0.40em 1em;
+}
+
+.fileManagerMain .fileManagerCell .customFilter input, .fileManagerMain .fileManagerCell .customFilter select
+{
+    padding: 3px;
+    background-image: none;
+    border: 1px solid #CCCCCC;
+    border-radius: 3px 3px 3px 3px;
+    font-size: 12px;
+    font-family: "Lucida Grande",Helvetica,Arial,"Arial Unicode",sans-serif;
+    color: #333333;
+}
+
+.fileManagerMain .fileManagerCell .customFilter #dateRange input
+{
+    width: 200px;
+}
+
+.fileManagerMain .fileManagerCell .customFilter #dateRange div
+{
+    font-size: 9px;
+}
+
+.fileManagerMain .fileManagerCell .customFilter .datepicker
+{
+    font-size: 11px;
+    display: inline;
+}
+
+.fileManagerMain .fileManagerCell .customFilter .datepicker .ui-datepicker-calendar .ui-state-default
+{
+    border: 1px solid #fff;
+}
+
+.fileManagerMain .fileManagerCell .customFilter .datepicker .ui-datepicker-header
+{
+    border-radius: 0px;
+}
+
+.fileManagerMain .fileManagerCell .customFilter .datepicker .ui-datepicker-buttonpane
+{
+    text-align: right;
+    padding: 5px;
+}
+
+.fileManagerMain .fileManagerCell .customFilter .datepicker .ui-datepicker-buttonpane input
+{
+    cursor: pointer;
+}
+
+.fileManagerMain .fileManagerCell .pagingWrapper
+{
+    margin-top: 7px;
+}
+
+.fileManagerMain .fileManagerCell .pagingWrapper .rightSection
+{
+    display: inline;
+    float: right;
+}
+
+.fileManagerMain .fileManagerCell .pagingWrapper .rightSection .button-container
+{
+    display: inline;
+    float: right;
+}
+
+.fileManagerMain .fileManagerCell .pagingWrapper .rightSection .button-container .currentPageText:hover
+{
+    background-color: #fff;
+    color: #333333;
+    cursor: auto;
+}
+
+.fileManagerMain .fileManagerCell .pagingWrapper .pagingSelector
+{
+    display: inline;
+    float: left;
+    padding-left: 7px;
+}
+
+.fileManagerMain .fileManagerCell .pagingWrapper .pagingSelector select
+{
+    font-size: 10px;
+    padding: 5px;
+}
+
+.fileManager .infoText
+{
+    padding: 7px;
+    display: block;
+}
+
+.accountFileDetailsPopup
+{
+    padding: 0px 7px 0 7px;
+}
+
+.accountFileDetailsPopup .pageHeaderPopupButtons, .popupContent .pageHeaderPopupButtons
+{
+    float: right;
+    margin-top: -6px;
+    padding-right: 24px;
+}
+
+.accountFileDetailsPopup .accountStateTable, .contentPageWrapper .accountStateTable
+{
+    table-layout: fixed;
+}
+
+.accountFileDetailsPopup .accountStateTable td, .contentPageWrapper .accountStateTable td
+{
+    word-wrap: break-word;
+}
+
+.date-range-selected > .ui-state-active,
+.date-range-selected > .ui-state-default {
+    background: none;
+    background-color: lightsteelblue;
+    color: #fff;
+}
+
+.loginLink, .loginLinkSelected
+{
+    margin-left: -6px;
+}
+
+#additionalOptionsWrapper .itemLeft ul, #additionalOptionsWrapper .itemRight ul
+{
+    padding: 0px;
+}
+
+.pageSuccess
+{
+    cursor: pointer;
+}
+
+.popupContent .popupContentUrlDiv
+{
+    font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+}
+
+/* V3.5 STYLES */
+.fileManagerMain .fileManagerCell .pagingWrapper .lowerToolbar
+{
+    display: inline;
+    float: right;
+    padding-right: 10px;
+}
+
+.fileManagerDraggleSelection
+{
+    position: absolute;
+    border: 1px solid #89B;
+    background-color: #5B9BDA;
+    border-color: #8B9;
+}
+
+.fileManagerIcon .fileListing .active, .fileManagerIcon .fileListing .active:hover
+{  
+    background-color: #E7F0FA;
+    border: 1px solid #B9B9B9;
+}
+
+.fileManagerList .fileListing .active, .fileManagerList .fileListing .active:hover
+{  
+    background-color: #E7F0FA;
+}
+
+.button-container .button-group.minor-group .button.ui-state-disabled:hover
+{
+    background-color: #FFFFFF;
+    color: #333333;
+}
+
+.button-container .button.ui-state-disabled.favorite.icon:hover:before
+{
+    background-position: 0 -348px;
+}
+
+.button-container .button.ui-state-disabled.trash.icon:hover:before
+{
+    background-position: 0 -336px;
+}
+
+.contactForm .field-container textarea, .contactForm .field-container input[type=text]
+{
+    width: 440px!important;
+}
+
+/* NOTE added statsTabs class to homeTabs classes above */
+
+.statsTabs .tabContent
+{
+    background-color: #fff;
+    padding: 16px;
+}
+
+.statsTabs .tabContent table
+{
+    width: 100%;
+    cellspacing: 0px;
+    border-collapse: collapse;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+}
+
+.statsTabs .tabContent table td, .statsTabs .tabContent table th
+{
+    padding: 4px;
+    border: 1px solid #ccc;
+}
+
+.statsTabs .tabContent table td:first-child
+{
+    width: 34%;
+}
+
+.statsTabs .tabContent table td:last-child
+{
+    width: 33%;
+}
+
+.statsTabs .tabContent table tr:nth-child(even)
+{
+    background-color: #DCF3FC;
+}
+
+.downloadPageTableV2
+{
+    margin: 0 auto 12px;
+    overflow: hidden;
+    width: 850px;
+}
+
+.downloadPageTableV2 table
+{
+    border-collapse: collapse;
+    width: 100%;
+    border-left: 1px solid #E2E2E2;
+    border-top: 1px solid #E2E2E2;
+}
+
+.downloadPageTableV2 th.descr
+{
+    background: url("../images/clock_small.png") no-repeat scroll 14px 50% transparent;
+    padding-left: 57px;
+    text-align: left;
+    width: 220px;
+}
+
+.downloadPageTableV2 th
+{
+    border-bottom: 1px solid #E2E2E2;
+    height: 57px;
+    background-color: transparent;
+    width: 180px;
+    color: #333333;
+    font-weight: normal;
+}
+
+.downloadPageTableV2 td.descr
+{
+    padding: 12px 0 11px 15px;
+    text-align: left;
+    width: 275px;
+}
+
+.downloadPageTableV2 td
+{
+    border-right: 1px solid #E2E2E2;
+    border-bottom: 1px solid #E2E2E2;
+    padding: 6px 0;
+    text-align: center;
+}
+
+.downloadPageTableV2 .link
+{
+    background: url("../images/download.png") no-repeat scroll 0 0 transparent;
+    color: #FFFFFF;
+    display: block;
+    font-size: 11px;
+    font-weight: bold;
+    height: 28px;
+    line-height: 28px;
+    margin: 0 auto;
+    overflow: hidden;
+    text-align: center;
+    text-shadow: 1px 1px 0 #565656;
+    width: 154px;
+    text-decoration: none;
+}
+
+.downloadPageTableV2 .link:hover
+{
+    text-decoration: underline;
+}
+
+.downloadPageTableV2 .premiumBtn
+{
+    background: url("../images/download.png") no-repeat scroll 0 100% transparent;
+    font-size: 18px;
+}
+
+.downloadPageTableV2 .typeHeader
+{
+    font-size: 18px;
+    text-align: center;
+}
+
+.contentPageWrapper .largeDownloadButtons
+{
+    text-align: center;
+}
+
+.contentPageWrapper .largeDownloadButtons img
+{
+    margin: 20px;
+    width:344px; 
+    height:138px;
+}
+
+.downloadPageTableV3 table
+{
+    width: 100%;
+}
+
+.downloadPageTableV3 td
+{
+    border-top: 1px solid #E2E2E2;
+    border-bottom: 1px solid #E2E2E2;
+    padding: 6px 0;
+    text-align: center;
+}
+
+/* V4.0 STYLES */
+.fileUploadWrapperAccountHome .fileUploadBadge
+{
+    display: none;
+}
+.fileUploadWrapperAccountHome
+{
+    padding-bottom: 8px;
+}
+.floatRight 
+{
+    float:right;
+}
+.fileLeechTextBox
+{
+    width:79%
+}
+.ftpTextBox
+{
+    width: 79%;
+}
+.ftpTextBox2
+{
+    width: 79%; padding-top: 22px; padding-bottom: 22px;
+}
+.accountStateTableLightBox 
+{
+    width: 100%; 
+    margin-top: 16px;
+}
+.accountStateTableLightBox2 
+{
+    width:100%;
+}
+.accountStateTableShareFile 
+{
+    width: 740px;
+}
+.accountStateTableShareFile2
+{
+    width: 740px; 
+    margin-top: 16px;
+}
+.upgradeBox 
+{
+    padding-right: 12px;
+    display:inline-block;
+}
+.upgradeBoxContainer .last
+{
+    padding-right:0px;
+}
+.upgradeBoxContainer 
+{
+   text-align:center; 
+}
+.captchaContainer 
+{
+    padding: 14px;
+}
+.captchaBox
+{
+    float: right;
+}
+.captchaPageText
+{
+    font-size: 12px; 
+    text-align:left; 
+    padding-top: 14px;
+}
+.captchaPageButton
+{
+    font-size: 12px; 
+    text-align:left; 
+    padding-top: 14px;
+}
+.captchaFileText
+{
+    text-align:left;
+}
+.responsiveNavigation
+{
+display:none;
+}
+.folderDropdown
+{
+display:none;
+}
+.fileuUploadProgressText1
+{
+    width:50%; 
+    float: right; 
+    text-align: right;
+}
+.fileuUploadProgressText2
+{
+    width:50%; 
+    float: left;
+}
+.filterText
+{
+    width: 100px;
+}
+.filterUploadedDateRange
+{
+width: 136px;
+}
+.filterOrderBy
+{
+width: 155px;
+}
+.accountEditSelectField
+{
+width:300px;
+}
+.globalPageWrapper
+{
+min-width:320px;
+}
+.accountEditItemSelect 
+{
+height: 30px; 
+float: left;
+}
+.footerMultiLanguageSwitcherWrapper .flagSelected 
+{
+    border: 5px solid #ccc;
+}
+.footerMultiLanguageSwitcherWrapper .flagNoneSelected
+{
+    border: 5px solid #fff;
+}
+
+.accountStateTableWrapper td
+{
+    vertical-align: top;
+}
+
+.accountStateTableWrapper .previewWrapper
+{
+    width: 198px;
+}
+
+.comments li .user-comment-content {
+    word-wrap: normal;
+    word-break: break-all;
+}

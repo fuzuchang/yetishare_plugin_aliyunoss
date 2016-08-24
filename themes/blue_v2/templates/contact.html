@@ -1,0 +1,246 @@
+<?php
+// setup page
+define("PAGE_NAME", t("contact_page_name", "Contact Us"));
+define("PAGE_DESCRIPTION", t("contact_meta_description", "Contact us"));
+define("PAGE_KEYWORDS", t("contact_meta_keywords", "contact, us, questions, queries, file, hosting"));
+
+$queryTypes = array();
+$queryTypes['contact_query_type_site_support'] = 'Site Support';
+$queryTypes['contact_query_type_bug_report'] = 'Bug Report';
+$queryTypes['contact_query_type_abuse_report'] = 'Abuse Report';
+$queryTypes['contact_query_type_suggest_improvements'] = 'Suggest Improvement';
+$queryTypes['contact_query_type_other'] = 'Other';
+
+// success handling
+if (isset($_REQUEST['s']))
+{
+    notification::setSuccess(t('contact_success', 'Thanks for submitting the contact form on our site. We\'ll review the query as soon as possible and get back to your within the nexr 48 hours.'));
+}
+
+// prepare variables
+$full_name = '';
+$email_address = '';
+$query = '';
+$query_type = '';
+
+// send report if submitted
+if ((int) $_REQUEST['submitme'])
+{
+    $full_name = trim($_REQUEST['full_name']);
+    $email_address = trim($_REQUEST['email_address']);
+    $query = trim($_REQUEST['query']);
+	$query_type = trim($_REQUEST['query_type']);
+
+    if (strlen($full_name) == 0)
+    {
+        notification::setError(t("contact_error_name", "Please enter your name."));
+    }
+    elseif (strlen($email_address) == 0)
+    {
+        notification::setError(t("contact_error_email", "Please enter your email."));
+    }
+    elseif (validation::validEmail($email_address) == false)
+    {
+        notification::setError(t("contact_error_email_invalid", "Please enter a valid email address."));
+    }
+	elseif (strlen($query_type) == 0)
+    {
+        notification::setError(t("contact_error_query_type", "Please select your type of query."));
+    }
+    elseif (strlen($query) == 0)
+    {
+        notification::setError(t("contact_error_signature", "Please enter your query."));
+    }
+
+    // check captcha
+    if ((!notification::isErrors()) && (SITE_CONFIG_CONTACT_FORM_SHOW_CAPTCHA == 'yes'))
+    {
+        if (!isset($_REQUEST['g-recaptcha-response']))
+        {
+            notification::setError(t("invalid_captcha", "Captcha confirmation text is invalid."));
+        }
+        else
+        {
+            $rs = coreFunctions::captchaCheck($_POST["g-recaptcha-response"]);
+            if (!$rs)
+            {
+                notification::setError(t("invalid_captcha", "Captcha confirmation text is invalid."));
+            }
+        }
+    }
+
+    // send email to admin
+    if (notification::isErrors() == false)
+    {
+        // send email
+		$loggedInUsername = $Auth->loggedIn()?$Auth->username:'Guest';
+        $subject = t('contact_email_subject_v2', '"[[[QUERY_TYPE]]]" contact from [[[SITE_NAME]]] by "[[[LOGGED_IN_USERNAME]]]" user.', array('SITE_NAME' => SITE_CONFIG_SITE_NAME, 'QUERY_TYPE' => $query_type, 'LOGGED_IN_USERNAME' => $loggedInUsername));
+
+        $replacements = array(
+            'FULL_NAME' => $full_name,
+            'EMAIL_ADDRESS' => $email_address,
+			'QUERY_TYPE' => $query_type,
+            'QUERY' => nl2br($query),
+            'SITE_NAME' => SITE_CONFIG_SITE_NAME,
+            'WEB_ROOT' => WEB_ROOT,
+			'LOGGED_IN' => $Auth->loggedIn()?'Yes':'No',
+			'LOGGED_IN_USERNAME' => $loggedInUsername,
+            'USERS_IP' => coreFunctions::getUsersIPAddress()
+        );
+        $defaultContent = "There has been a contact form submission from [[[SITE_NAME]]] with the following details:<br/><br/>";
+        $defaultContent .= "***************************************<br/>";
+        $defaultContent .= "Full Name: [[[FULL_NAME]]]<br/>";
+        $defaultContent .= "Email Address: [[[EMAIL_ADDRESS]]]<br/>";
+		$defaultContent .= "Query Type: [[[QUERY_TYPE]]]<br/>";
+        $defaultContent .= "<br/>[[[QUERY]]]<br/>";
+        $defaultContent .= "***************************************<br/>";
+        $defaultContent .= "Logged In: [[[LOGGED_IN]]]<br/>";
+		$defaultContent .= "Username: [[[LOGGED_IN_USERNAME]]]<br/>";
+		$defaultContent .= "Submitted IP: [[[USERS_IP]]]<br/>";
+        $defaultContent .= "***************************************<br/><br/>";
+        $htmlMsg = t('contact_email_content_v2', $defaultContent, $replacements);
+
+        coreFunctions::sendHtmlEmail(SITE_CONFIG_SITE_CONTACT_FORM_EMAIL, $subject, $htmlMsg, SITE_CONFIG_DEFAULT_EMAIL_ADDRESS_FROM, strip_tags(str_replace("<br/>", "\n", $htmlMsg)), false, $full_name);
+        coreFunctions::redirect(WEB_ROOT . '/contact.' . SITE_CONFIG_PAGE_EXTENSION . '?s=1');
+    }
+}
+else
+{
+    if ($Auth->loggedIn())
+    {
+        $full_name = $Auth->user->firstname . ' ' . $Auth->user->lastname;
+        $email_address = $Auth->user->email;
+    }
+}
+
+// include header
+require_once(SITE_TEMPLATES_PATH . '/partial/_header.inc.php');
+?>
+
+<script>
+function selectTypeItem()
+{
+	$('.supportWrapper').hide();
+	if ($('#query_type').val() == 'Abuse Report')
+	{
+		if (confirm('<?php echo str_replace(array("\n", "\r", "\"", "'"), '', t('contact_abuse_report_popup_notice', 'Please submit all abuse reports via our dedicated abuse report page. Click OK to continue to it now.')); ?>'))
+		{
+			$('#query_type').val('Site Support');
+			window.location = '<?php echo WEB_ROOT; ?>/report_file.html';
+		}
+		else
+		{
+			$('#query_type').val('Site Support');
+		}
+	}
+}
+</script>
+
+<div class="contentPageWrapper">
+    <?php
+    if (notification::isErrors())
+    {
+        echo notification::outputErrors();
+    }
+    elseif (notification::isSuccess())
+    {
+        echo notification::outputSuccess();
+    }
+    ?>
+    <!-- report abuse form -->
+    <div class="pageSectionMain ui-corner-all">
+        <div class="pageSectionMainInternal">
+            <div id="pageHeader">
+                <h2><?php echo t("contact_us", "Contact Us"); ?></h2>
+            </div>
+            <div class="introText">
+                <?php
+                echo t('contact_intro', 'Please use the following form to contact us with any queries. Abuse reports should be sent via our <a href="[[[ABUSE_URL]]]">abuse pages</a>.', array('ABUSE_URL' => WEB_ROOT . '/report_file.' . SITE_CONFIG_PAGE_EXTENSION));
+                ?>
+                <br/><br/>
+                <form id="form-join" class="contactForm" method="post" action="<?php echo WEB_ROOT; ?>/contact.<?php echo SITE_CONFIG_PAGE_EXTENSION; ?>" id="form-join">
+                    <ul class="contactFormRow">
+                        <li class="field-container">
+                            <label for="full_name">
+                                <span class="field-name">
+                                    <?php
+                                    echo t('contact_full_name', 'Your full name');
+                                    ?>:
+                                </span>
+                                <input name="full_name" type="text" value="<?php echo validation::safeOutputToScreen($full_name); ?>"/>
+                            </label>
+                        </li>
+                        <li class="field-container">
+                            <label for="email_address">
+                                <span class="field-name">
+                                    <?php
+                                    echo t('contact_email_address', 'Email address');
+                                    ?>:
+                                </span>
+                                <input name="email_address" type="text" value="<?php echo validation::safeOutputToScreen($email_address); ?>"/>
+                            </label>
+                        </li>
+						
+						<li class="field-container">
+							<label for="query_type">
+                                <span class="field-name">
+                                    <?php
+                                    echo t('contact_query_type', 'Query yype');
+                                    ?>:
+                                </span>
+								<select name="query_type" id="query_type" class="form-control" onChange="selectTypeItem(); return false;">
+									<option value="">- <?php echo t('contact_select_subject', 'select subject'); ?> -</option>
+									<?php
+									foreach($queryTypes AS $k=>$queryType)
+									{
+										echo '<option value="'.validation::safeOutputToScreen($queryType).'"';
+										if($queryType == $query_type)
+										{
+											echo ' SELECTED';
+										}
+										echo '>'.validation::safeOutputToScreen(t($k, $queryType)).'</option>';
+									}
+									?>
+								</select>
+							</label>
+						</li>
+						
+                        <li class="field-container">
+                            <label for="query">
+                                <span class="field-name">
+                                    <?php
+                                    echo t('contact_your_query', 'Your query');
+                                    ?>:
+                                </span>
+                                <textarea rows="10" id="query" name="query"><?php echo validation::safeOutputToScreen($query); ?></textarea>
+                            </label>
+                        </li>
+                        <?php if (SITE_CONFIG_CONTACT_FORM_SHOW_CAPTCHA == 'yes'): ?>
+                            <li class="field-container" style="height: auto; left: 118px;">
+                                <label for="recaptcha_response_field">
+                                    <span class="field-name"><?php echo t("confirm_text", "Confirmation Text"); ?></span>
+                                </label>
+                                <div class="responsiveCaptchaWrapper">
+                                    <?php echo coreFunctions::outputCaptcha(); ?>
+                                </div>
+                                <div class="clear"></div>
+                            </li>
+                        <?php endif; ?>
+                        <li class="field-container" style="padding-top: 10px;">
+                            <span class="field-name"></span>
+                            <input name="submitme" type="hidden" value="1"/>
+                            <input tabindex="99" type="submit" name="submit" value="<?php echo t("contact_submit_form", "submit form"); ?>" class="submitInput" />
+                        </li>
+                    </ul>
+                </form>
+                <div class="clear"></div>
+            </div>
+        </div>
+    </div>
+    <?php include_once(SITE_TEMPLATES_PATH . '/partial/_banner_right_content.inc.php'); ?>
+    <div class="clear"><!-- --></div>
+</div>
+<?php
+// include footer
+require_once(SITE_TEMPLATES_PATH . '/partial/_footer.inc.php');
+?>

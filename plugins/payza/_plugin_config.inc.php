@@ -1,0 +1,1 @@
+<?php// core plugin config$pluginConfig = array();$pluginConfig['plugin_name']             = 'Payza Payment Integration';$pluginConfig['folder_name']             = 'payza';$pluginConfig['plugin_description']      = 'Accept payments using Payza.';$pluginConfig['plugin_version']          = 1;$pluginConfig['required_script_version'] = 4.0;

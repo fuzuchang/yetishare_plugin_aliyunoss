@@ -1,0 +1,194 @@
+<?php
+
+if(SITE_CONFIG_ENABLE_FILE_SEARCH == 'no')
+{
+	// this page can not be accessed
+	coreFunctions::output404();
+}
+
+// setup page
+define("PAGE_NAME", t("search_page_name", "Search"));
+define("PAGE_DESCRIPTION", t("search_meta_description", "Check multiple download links at the same time."));
+define("PAGE_KEYWORDS", t("search_meta_keywords", "link, checker, copyright, infringement, file, hosting"));
+define("TITLE_DESCRIPTION_LEFT", t("search_title_page_description_left", ""));
+define("TITLE_DESCRIPTION_RIGHT", t("search_title_page_description_right", ""));
+define('CURRENT_PAGE_KEY', 'search_files');
+
+// include header
+require_once(SITE_TEMPLATES_PATH . '/partial/_header.inc.php');
+
+// document types
+require_once(SITE_TEMPLATES_PATH . '/partial/_search_document_types.inc.php');
+?>
+
+<script>
+	oTable = null;
+	filterType = '';
+	newSearch = true;
+    $(document).ready(function() {
+        oTable = $('#searchResults').dataTable({
+            "sPaginationType": "full_numbers",
+            "bAutoWidth": false,
+            "bServerSide": true,
+            "bProcessing": true,
+            "sAjaxSource": 'ajax/_search.ajax.php',
+            "iDisplayLength": 25,
+            "bFilter": false,
+            "bSort": false,
+            "bLengthChange": false,
+            "aoColumns": [
+                {},
+				{sClass: "alignCenter searchLastCol", sWidth: "150"}
+            ],
+            "oLanguage": {
+                "oPaginate": {
+                    "sFirst": "<?php echo t('datatable_first', 'First'); ?>",
+                    "sPrevious": "<?php echo t('datatable_previous', 'Previous'); ?>",
+                    "sNext": "<?php echo t('datatable_next', 'Next'); ?>",
+                    "sLast": "<?php echo t('datatable_last', 'Last'); ?>"
+                },
+                "sEmptyTable": "<?php echo t('datatable_no_files_available_in_search_results', 'No files available in search results'); ?>",
+                "sInfo": "<?php echo t('datatable_showing_x_to_x_of_total_files', 'Showing _START_ to _END_ of _TOTAL_ files'); ?>",
+                "sInfoEmpty": "<?php echo t('datatable_no_files', ''); ?>",
+                "sLengthMenu": "<?php echo t('datatable_show_menu_files', 'Show _MENU_ files'); ?>",
+                "sProcessing": "<?php echo t('datatable_loading_please_wait', 'Loading, please wait...'); ?>",
+                "sInfoFiltered": "<?php echo t('datatable_base_filtered', ' (filtered)'); ?>",
+                "sSearch": "<?php echo t('datatable_search_text', 'Search:'); ?>",
+                "sZeroRecords": "<?php echo t('datatable_no_matching_records_found', 'No matching records found'); ?>"
+            },
+			"fnServerData": function ( sSource, aoData, fnCallback ) {
+                aoData.push( { "name": "filterText", "value": $('#filterText').val() } );
+				aoData.push( { "name": "filterType", "value": filterType } );
+                $.ajax({
+                    "dataType": 'json',
+                    "type": "GET",
+                    "url": "ajax/_search.ajax.php",
+                    "data": aoData,
+                    "success": function(json) { updateTotals(json); fnCallback(json); }
+                });
+            }
+        });
+	});
+	
+	function reloadTable(lFilterType)
+	{
+		if(typeof(lFilterType) == 'undefined')
+		{
+			lFilterType = null;
+		}
+		filterType = lFilterType;
+		
+		oTable.fnPageChange('first');
+		oTable.fnDraw(false);
+	}
+	
+	function updateTotals(json)
+	{
+		if(filterType == null)
+		{
+			$('.nav-tabs a:first').tab('show');
+		}
+		
+		if(newSearch == false)
+		{
+			// scroll to top
+			$("html, body").animate({scrollTop: $(".search-control").offset().top-10-($("#navigation").height())}, 200);
+		}
+		
+		newSearch = false;
+		
+		setTabText('all', json.iTotalAll); 
+		<?php foreach($documentTypes AS $documentType=>$documentExt): ?>
+		setTabText('<?php echo $documentType; ?>', json.iTotal<?php echo UCFirst($documentType); ?>); 
+		<?php endforeach; ?>
+	}
+	
+	function setTabText(id, total)
+	{
+		$('.tab-text-'+id).html('('+total+')');
+	}
+</script>
+
+<div class="row">
+	<div class="col-md-12">
+        <div class="col-md-12 form-description">
+            <p><?php echo t("search_intro", "Search or browse all publicly shared files on this site using the form below."); ?></p>
+        </div>
+	</div>
+	<div class="col-md-12">
+		<form action="<?php echo WEB_ROOT; ?>/search.html" class="search-line block" method="POST" onSubmit="reloadTable(); return false;">
+			<div class="input-group">
+				<div class="search-control">
+					<input name="filterText" id="filterText" type="text" class="form-control autocomplete ui-autocomplete-input" placeholder="<?php echo t("search_box_placeholder", "Enter your search term here..."); ?>" autocomplete="off"/>
+				</div>
+				<span class="input-group-btn main-search-button">
+					<button type="submit" class="btn btn-default"><?php echo t("search_form_search", "Search"); ?> <i class="fa fa-search"></i></button>
+				</span>
+			</div>
+		</form>
+	</div>
+	
+	<div class="col-md-12">
+		<div class="tabbable page-tabs search-tabs">
+			<ul class="nav nav-tabs">
+				<li class="active" onClick="reloadTable('all'); return false;"><a href="#classic" data-toggle="tab"><i class="search-icon search-icon-all"></i><span class="tab-text"> <?php echo t('search_type_all_files', "All Files"); ?></span> <span class="text-danger label-text tab-text-all"></span></a></li>
+				<?php
+				foreach($documentTypes AS $documentType=>$documentExts)
+				{
+					echo '<li  onClick="reloadTable(\''.$documentType.'\'); return false;"><a href="#'.$documentType.'" data-toggle="tab"><i class="search-icon search-icon-'.$documentType.'"></i><span class="tab-text"> '.t('search_type_'.$documentType, UCWords($documentType)).'</span> <span class="text-danger label-text tab-text-'.$documentType.'"></span></a></li>';
+				}
+				?>
+			</ul>
+
+			<div class="tab-content">
+
+				<!-- First tab -->
+				<div class="tab-pane fade active in">
+				
+					<?php
+					if (notification::isErrors())
+					{
+						echo notification::outputErrors();
+					}
+					elseif (notification::isSuccess())
+					{
+						echo notification::outputSuccess();
+					}
+					?>
+					
+					<table id="searchResults" width="100%" cellpadding="3" cellspacing="0" class="searchResults">
+						<tbody></tbody>
+					</table>
+				</div>
+				<!-- /first tab -->
+
+			</div>
+
+		</div>
+	</div>
+</div>
+
+<div class="customFilter" id="customFilter" style="display: none;">
+	<label class="adminResponsiveHide filterByTypeWrapper" style="padding-left: 6px;">
+        Server:
+        <select name="filterByType" id="filterByType" onChange="reloadTable(); return false;" style="width: 120px;">
+            <option value="">- all -</option>
+            <?php
+			foreach ($documentTypes AS $documentType=>$documentExtensions)
+			{
+				echo '<option value="' . $documentExtensions . '"';
+				if (($filterByType) && ($filterByType == $documentExtensions))
+				{
+					echo ' SELECTED';
+				}
+				echo '>' . $documentType . '</option>';
+			}
+            ?>
+        </select>
+    </label>
+</div>
+
+<?php
+// include footer
+require_once(SITE_TEMPLATES_PATH . '/partial/_footer.inc.php');
+?>

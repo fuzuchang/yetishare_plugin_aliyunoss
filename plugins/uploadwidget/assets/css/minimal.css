@@ -1,0 +1,163 @@
+@charset 'UTF-8';
+
+/* site styles */
+html, body
+{
+    margin:				0;
+    padding:			0;
+    font-family:		"Lucida Grande", Helvetica, Arial, "Arial Unicode", sans-serif;
+    font-size:			12px;
+    color:				#333;
+    height:				100%;
+    background-color:	#fff;
+}
+
+img
+{
+    border:				none;
+}
+
+a
+{
+    text-decoration:	underline;
+    color:				#326C76;
+    outline:            none;
+}
+
+a:hover
+{
+    text-decoration:	none;
+}
+
+ul
+{
+    list-style-type: none;
+}
+
+.clear
+{
+    clear:				both;
+}
+
+.clearLeft
+{
+    clear:				left;
+}
+
+.clearRight
+{
+    clear:				right;
+}
+
+.fileUploadMainFull
+{
+    width:				100%;
+    text-align:			left;
+}
+
+.fileUploadMainInternal
+{
+    padding:            12px;
+}
+
+.fileListingWrapper .globalProgressWrapper
+{
+    width:                              70%;
+    height:                             10px;
+    float:                              left;
+}
+
+.contentPageWrapper h2
+{
+    color: #007c82;
+    line-height: 0px;
+    padding-bottom: 10px;
+    font-size: 22px;
+    text-transform: lowercase;
+}
+
+.hidden
+{
+    display: none;
+}
+
+.files
+{
+    border-bottom: 1px solid #E2E4FF;
+	border-collapse: collapse;
+}
+
+.files td, .addFileRow td {
+    padding-top: 3px;
+    border-spacing: 3px;
+}
+
+.files .cancel, .addFileRow .cancel
+{
+    width: 30px;
+    text-align: center;
+}
+
+.files .cancel
+{
+    height: 22px;
+}
+
+.files .name, .files .url a  {
+    text-align: left;
+}
+
+.files .name
+{
+    width: 35%;
+}
+
+.files .cancel
+{
+    width: 22px;
+}
+
+.files .rightArrow
+{
+    width: 16px;
+}
+
+.files .rightArrow
+{
+    width: 14px;
+}
+
+.addFileRow td
+{
+    border-bottom: 1px solid #eee;
+}
+
+
+.fileupload-content .fileListingWrapper .files td, .fileupload-content .fileListingWrapper .files td
+{
+    border-top: 1px solid #E2E4FF;
+}
+
+.ui-state-disabled .ui-state-disabled {
+    opacity: 1;
+    filter: alpha(opacity=100);
+}
+
+.ui-state-disabled input {
+    cursor: default;
+}
+
+.fileupload-buttonbar
+{
+	margin-bottom: 6px;
+}
+
+.fileinput-button span
+{
+	margin-right: 6px;
+}
+
+.fileinput-button .add_files_btn
+{
+	margin-right: 6px;
+}

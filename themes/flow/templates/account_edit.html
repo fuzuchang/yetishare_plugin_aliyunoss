@@ -1,0 +1,779 @@
+<?php
+
+// require login
+$Auth->requireUser(WEB_ROOT.'/login.'.SITE_CONFIG_PAGE_EXTENSION);
+
+// load user
+$user = UserPeer::loadUserById($Auth->id);
+if (!$user)
+{
+    coreFunctions::redirect(WEB_ROOT);
+}
+if(isset($_REQUEST['s']))
+{
+    notification::setSuccess(t("account_lock_activation_success_message", "Account successfully secured."));
+}
+if(isset($_REQUEST['ss']))
+{
+    notification::setSuccess(t("account_updated_success_message", "Account details successfully updated"));    
+}
+if(isset($_REQUEST['f']))
+{
+    notification::setSuccess(t("account_lock_activation_failure_message", "Account could not be secured at this time, please try again later."));
+}
+if(isset($_REQUEST['us']))
+{
+    notification::setSuccess(t("account_lock_deactivation_success_message", "Account successfully unlocked."));
+}
+if(isset($_REQUEST['uf']))
+{
+    notification::setSuccess(t("account_lock_deactivation_failure_message", "Account could not be unlocked at this time, please try again later."));
+}
+if(isset($_REQUEST['uc']))
+{
+    notification::setError(t("account_lock_deactivation_code_mismatch", "Account could not be unlocked as the code is incorrect."));
+}
+if(isset($_REQUEST['e']))
+{
+    notification::setSuccess(t("account_lock_resend_email_confirm_message", "The email containing the unlock code has been emailed to the registered email account."));
+}
+// setup page
+define("PAGE_NAME", t("account_edit_page_name", "Account Details"));
+define("PAGE_DESCRIPTION", t("account_edit_meta_description", "Account details"));
+define("PAGE_KEYWORDS", t("account_edit_meta_keywords", "details, account, short, url, user"));
+define("SELECTED_NAVIGATION_LINK", "settings");
+
+// get account stats
+$totalFreeSpace   = UserPeer::getAvailableFileStorage($Auth->id);
+$totalActiveFiles = file::getTotalActiveFilesByUser($Auth->id);
+$totalDownloads   = file::getTotalDownloadsByUserOwnedFiles($Auth->id);
+$lockStatus       = coreFunctions::getUsersAccountLockStatus($Auth->id);
+
+// Activate security lock
+
+if (isset($_REQUEST['secureAccount']) && (int)$_REQUEST['secureAccount'])
+{
+    // Generate the locking Hash
+    $lockHash = coreFunctions::generateSecurityLockHash();   
+	
+    // Update the database
+    $db = Database::getDatabase();
+    $rs = $db->query("UPDATE users SET accountLockStatus = 1, accountLockHash = ".$db->quote($lockHash)." WHERE id = ".(int)$Auth->id);
+    if($rs && (!notification::isErrors()))
+    {
+        // Send email to the registered account
+        $subject = t('lock_account_email_subject', 'Security lock details for [[[SITE_NAME]]]', array('SITE_NAME' => SITE_CONFIG_SITE_NAME));
+        $replacements   = array(
+                                'FIRST_NAME'    => $user->firstname,
+                                'SITE_NAME'     => SITE_CONFIG_SITE_NAME,
+                                'UNLOCK_CODE'   => $lockHash
+                                );
+        $defaultContent = "Dear [[[FIRST_NAME]]],<br/><br/>";
+        $defaultContent .= "Your account on [[[SITE_NAME]]] has been locked as per your request. Use the code below to unlock your account:<br/><br/>";
+        $defaultContent .= "<strong>Unlock code:</strong> [[[UNLOCK_CODE]]]<br/><br/>";
+        $defaultContent .= "Feel free to contact us if you need any support with your account.<br/><br/>";
+        $defaultContent .= "Regards,<br/>";
+        $defaultContent .= "[[[SITE_NAME]]] Admin";
+        $htmlMsg        = t('lock_account_email_content', $defaultContent, $replacements);
+    
+        coreFunctions::sendHtmlEmail($user->email, $subject, $htmlMsg, SITE_CONFIG_DEFAULT_EMAIL_ADDRESS_FROM, strip_tags(str_replace("<br/>", "\n", $htmlMsg)));
+        coreFunctions::redirect(WEB_ROOT.'/account_edit.html?s=1');
+    }
+    else
+    {
+        coreFunctions::redirect(WEB_ROOT.'/account_edit.html?f=1');
+    }
+}
+
+if (isset($_REQUEST['unlockAccount']) && (int)$_REQUEST['unlockAccount'])
+{
+    $accountCode = trim($_REQUEST['accountCode']);
+    if(!$accountCode)
+    {
+        notification::setError(t("account_lock_deactivation_no_code_message", "Please enter the unlock code and try again."));
+    }
+	
+    if(!notification::isErrors())
+    {
+        // get the unlock code from the DB
+        $unlockCode = $db->getRow("SELECT accountLockHash FROM users WHERE id = ".(int)$Auth->id." AND accountLockStatus = '1' LIMIT 1");
+        if($unlockCode)
+        {
+            // Codes match, continue to unlock account
+            if($accountCode === $unlockCode['accountLockHash'])
+            {
+                $rs = $db->query("UPDATE users SET accountLockStatus = 0, accountLockHash = '' WHERE id = ".(int)$Auth->id.' LIMIT 1');
+                if($rs)
+                {
+                    coreFunctions::redirect(WEB_ROOT.'/account_edit.html?us=1');
+                }
+            }
+            else
+            {
+                coreFunctions::redirect(WEB_ROOT.'/account_edit.html?uc=1');   
+            }
+        }
+        else
+        {
+            coreFunctions::redirect(WEB_ROOT.'/account_edit.html?uf=1');
+        }
+    }    
+}
+
+if (isset($_REQUEST['resendCode']) && (int)$_REQUEST['resendCode'])
+{
+    // Send email to the registered account
+    $details = $db->getRow("SELECT accountLockHash FROM users WHERE id = ".(int)$Auth->id." LIMIT 1");
+    
+    $subject = t('lock_account_email_subject', 'Security lock details for [[[SITE_NAME]]]', array('SITE_NAME' => SITE_CONFIG_SITE_NAME));
+    $replacements   = array(
+                            'FIRST_NAME'    => $user->firstname,
+                            'SITE_NAME'     => SITE_CONFIG_SITE_NAME,
+                            'UNLOCK_CODE'   => $details['accountLockHash']
+                            );
+    $defaultContent = "Dear [[[FIRST_NAME]]],<br/><br/>";
+    $defaultContent .= "Your account on [[[SITE_NAME]]] has been locked as per your request. Use the code below to unlock your account:<br/><br/>";
+    $defaultContent .= "<strong>Unlock code:</strong> [[[UNLOCK_CODE]]]<br/><br/>";
+    $defaultContent .= "Feel free to contact us if you need any support with your account.<br/><br/>";
+    $defaultContent .= "Regards,<br/>";
+    $defaultContent .= "[[[SITE_NAME]]] Admin";
+    $htmlMsg        = t('lock_account_email_content', $defaultContent, $replacements);
+
+    coreFunctions::sendHtmlEmail($user->email, $subject, $htmlMsg, SITE_CONFIG_DEFAULT_EMAIL_ADDRESS_FROM, strip_tags(str_replace("<br/>", "\n", $htmlMsg)));
+    coreFunctions::redirect(WEB_ROOT.'/account_edit.html?e=1');
+}
+
+// update user
+if (isset($_REQUEST['submitme']) && (int)$_REQUEST['submitme'])
+{
+    // validation
+    $title 				= trim($_REQUEST['title']);
+    $firstname 			= trim($_REQUEST['firstname']);
+    $lastname 			= trim($_REQUEST['lastname']);
+    $emailAddress 		= trim(strtolower($_REQUEST['emailAddress']));
+    $password 			= trim($_REQUEST['password']);
+    $passwordConfirm 	= trim($_REQUEST['passwordConfirm']);
+    $languageId 		= null;
+	$filePrivacy		= (int)$_REQUEST['isPublic'];
+    if(isset($_REQUEST['languageId']))
+    {
+        $languageId = (int)$_REQUEST['languageId'];
+    }
+    $privateFileStatistics = (int)$_REQUEST['privateFileStatistics'];
+	$uploadedAvatar = null;
+	if((isset($_FILES['avatar']['tmp_name'])) && (strlen($_FILES['avatar']['tmp_name'])))
+	{
+		$uploadedAvatar = $_FILES['avatar'];
+	}
+	$removeAvatar = false;
+	if((isset($_REQUEST['removeAvatar'])) && ((int)$_REQUEST['removeAvatar'] == 1))
+	{
+		$removeAvatar = true;
+	}
+	
+    if (!strlen($title))
+    {
+        notification::setError(t("please_enter_your_title", "Please enter your title"));
+    }
+    elseif (!strlen($firstname))
+    {
+        notification::setError(t("please_enter_your_firstname", "Please enter your firstname"));
+    }
+    elseif (!strlen($lastname))
+    {
+        notification::setError(t("please_enter_your_lastname", "Please enter your lastname"));
+    }
+    elseif (!strlen($emailAddress))
+    {
+        notification::setError(t("please_enter_your_email_address", "Please enter your email address"));
+    }
+    elseif (!validation::validEmail($emailAddress))
+    {
+        notification::setError(t("your_email_address_is_invalid", "Your email address is invalid"));
+    }
+    elseif(_CONFIG_DEMO_MODE == true)
+    {
+        notification::setError(t("no_changes_in_demo_mode"));
+    }
+    else
+    {
+        $checkEmail = UserPeer::loadUserByEmailAddress($emailAddress);
+        if (($checkEmail) && ($checkEmail->id != $Auth->id))
+        {
+            // username exists
+            notification::setError(t("email_address_already_exists", "Email address already exists on another account"));
+        }
+        else
+        {
+            // check password if one set
+            if(strlen($password))
+            {
+                if($password != $passwordConfirm)
+                {
+                    notification::setError(t("your_password_confirmation_does_not_match", "Your password confirmation does not match"));
+                }
+                else
+                {
+                    $passValid = passwordPolicy::validatePassword($password);
+                    if(is_array($passValid))
+                    {
+                        notification::setError(implode('<br/>', $passValid));
+                    }
+                }
+            }
+        }
+    }
+	
+	if (!notification::isErrors())
+    {
+		if($uploadedAvatar)
+		{
+			// check filesize
+			$maxAvatarSize = 1024*1024*5;
+			if($uploadedAvatar['size'] > ($maxAvatarSize))
+			{
+				notification::setError(t("account_edit_avatar_is_too_large", "The uploaded image can not be more than [[[MAX_SIZE_FORMATTED]]]", array('MAX_SIZE_FORMATTED'=>coreFunctions::formatSize($maxAvatarSize))));
+			}
+			else
+			{
+				// make sure it's an image
+				$imagesizedata = @getimagesize($uploadedAvatar['tmp_name']);
+				if ($imagesizedata === FALSE)
+				{
+					//not image
+					notification::setError(t("account_edit_avatar_is_not_an_image", "Your avatar must be a jpg, png or gif image."));
+				}
+			}
+		}
+	}
+
+    // update the account
+    if (!notification::isErrors())
+    {
+        // if password changed send confirmation notice to user
+        if(SITE_CONFIG_SECURITY_SEND_USER_EMAIL_ON_PASSWORD_CHANGE == 'yes')
+        {
+            if(strlen($password))
+            {
+                $subject = t('password_change_email_subject', 'Password changed for account on [[[SITE_NAME]]]', array('SITE_NAME' => SITE_CONFIG_SITE_NAME));
+
+                $replacements = array(
+                    'FIRST_NAME' => $user->firstname,
+                    'SITE_NAME' => SITE_CONFIG_SITE_NAME,
+                    'WEB_ROOT' => WEB_ROOT,
+                    'USERNAME' => $user->username,
+                );
+                $defaultContent = "Dear [[[FIRST_NAME]]],<br/><br/>";
+                $defaultContent .= "This is a courtesy email notifying you that your account password on [[[SITE_NAME]]] has been changed.<br/><br/>";
+                $defaultContent .= "If you didn't change your password, please contact us immediately. Otherwise just ignore this email.<br/><br/>";
+                $defaultContent .= "<strong>Url:</strong> <a href='[[[WEB_ROOT]]]'>[[[WEB_ROOT]]]</a><br/>";
+                $defaultContent .= "<strong>Username:</strong> [[[USERNAME]]]<br/><br/>";
+                $defaultContent .= "Feel free to contact us if you need any support with your account.<br/><br/>";
+                $defaultContent .= "Regards,<br/>";
+                $defaultContent .= "[[[SITE_NAME]]] Admin";
+                $htmlMsg = t('password_change_email_content', $defaultContent, $replacements);
+
+                coreFunctions::sendHtmlEmail($user->email, $subject, $htmlMsg, SITE_CONFIG_DEFAULT_EMAIL_ADDRESS_FROM, strip_tags(str_replace("<br/>", "\n", $htmlMsg)));
+            }
+        }
+        
+        // if email changed send confirmation notice to user
+        if(SITE_CONFIG_SECURITY_SEND_USER_EMAIL_ON_EMAIL_CHANGE == 'yes')
+        {
+            if($emailAddress != $user->email)
+            {
+                $subject = t('email_change_email_subject', 'Email changed for account on [[[SITE_NAME]]]', array('SITE_NAME' => SITE_CONFIG_SITE_NAME));
+
+                $replacements = array(
+                    'FIRST_NAME' => $user->firstname,
+                    'SITE_NAME' => SITE_CONFIG_SITE_NAME,
+                    'WEB_ROOT' => WEB_ROOT,
+                    'USERNAME' => $user->username,
+                    'NEW_EMAIL' => $emailAddress,
+                );
+                $defaultContent = "Dear [[[FIRST_NAME]]],<br/><br/>";
+                $defaultContent .= "This is a courtesy email notifying you that your account email address on [[[SITE_NAME]]] has been changed to [[[NEW_EMAIL]]].<br/><br/>";
+                $defaultContent .= "If you didn't change your email address, please contact us immediately. Otherwise just ignore this email.<br/><br/>";
+                $defaultContent .= "<strong>Url:</strong> <a href='[[[WEB_ROOT]]]'>[[[WEB_ROOT]]]</a><br/>";
+                $defaultContent .= "<strong>Username:</strong> [[[USERNAME]]]<br/>";
+                $defaultContent .= "<strong>New Email:</strong> [[[NEW_EMAIL]]]<br/><br/>";
+                $defaultContent .= "Feel free to contact us if you need any support with your account.<br/><br/>";
+                $defaultContent .= "Regards,<br/>";
+                $defaultContent .= "[[[SITE_NAME]]] Admin";
+                $htmlMsg = t('email_change_email_content', $defaultContent, $replacements);
+
+                coreFunctions::sendHtmlEmail($user->email, $subject, $htmlMsg, SITE_CONFIG_DEFAULT_EMAIL_ADDRESS_FROM, strip_tags(str_replace("<br/>", "\n", $htmlMsg)));
+            }
+        }
+        
+        $db = Database::getDatabase(true);
+        $rs = $db->query('UPDATE users SET title = :title, firstname = :firstname, lastname = :lastname, email = :email, languageId = :languageId, privateFileStatistics = :privateFileStatistics, isPublic = :isPublic WHERE id = :id', array('title' => $title, 'firstname' => $firstname, 'lastname' => $lastname, 'email' => $emailAddress, 'id' => $Auth->id, 'languageId' => $languageId, 'privateFileStatistics' => $privateFileStatistics, 'isPublic' => $filePrivacy));
+        if ($rs)
+        {
+            // do password
+            if(strlen($password))
+            {
+                $rs = $db->query('UPDATE users SET password = :password WHERE id = :id', array('password' => Password::createHash($password), 'id' => $Auth->id));
+            }
+            
+            // reset site language if updated
+            if($languageId != null)
+            {
+                $languageName = $db->getValue("SELECT languageName FROM language WHERE isActive = 1 AND id = " . (int)$languageId . " LIMIT 1");
+                if($languageName)
+                {
+                    $_SESSION['_t'] = $languageName;
+                }
+            }
+			
+			// save avatar
+			$src = null;
+			if($uploadedAvatar)
+			{
+				// convert all images to jpg
+				$imgInfo = getimagesize($uploadedAvatar['tmp_name']);
+				switch ($imgInfo[2])
+				{
+					case IMAGETYPE_GIF: $src = imagecreatefromgif($uploadedAvatar['tmp_name']);  break;
+					case IMAGETYPE_JPEG: $src = imagecreatefromjpeg($uploadedAvatar['tmp_name']); break;
+					case IMAGETYPE_PNG: $src = imagecreatefrompng($uploadedAvatar['tmp_name']);  break;
+					default: $src = null;
+				}
+			}
+
+			// if we've loaded the image store it as jpg
+			if(($src) || ($removeAvatar == true))
+			{
+				ob_start();
+				imagejpeg($src, null, 100);
+				$imageData = ob_get_contents();
+				ob_end_clean();
+				$avatarCachePath = 'user/'.(int)$Auth->id.'/profile';
+				
+				// delete any existing avatar files including generate cache
+				if(file_exists(CACHE_DIRECTORY_ROOT.'/'.$avatarCachePath))
+				{
+					$files = coreFunctions::getDirectoryListing(CACHE_DIRECTORY_ROOT.'/'.$avatarCachePath);
+					if(COUNT($files))
+					{
+						foreach($files AS $file)
+						{
+							@unlink($file);
+						}
+					}
+				}
+				
+				if($src)
+				{
+					// save new file
+					cache::saveCacheToFile($avatarCachePath.'/avatar_original.jpg', $imageData);
+				}
+			}
+            coreFunctions::redirect(WEB_ROOT.'/account_edit.html?ss=1');
+            //notification::setSuccess(t("account_updated_success_message", "Account details successfully updated"));
+        }
+        else
+        {
+            notification::setError(t("problem_updating_your_account_try_again_later", "There was a problem updating your account, please try again later"));
+        }
+    }
+}
+else
+{
+    $title        = $user->title;
+    $firstname    = $user->firstname;
+    $lastname 	  = $user->lastname;
+    $emailAddress = $user->email;
+    $languageId   = $user->languageId;
+	$isPublic     = $user->isPublic;
+    if($languageId == null)
+    {
+        $languageId = $db->getValue("SELECT id FROM language WHERE isActive = 1 AND languageName = '" . $db->escape(trim($_REQUEST['_t'])) . "' LIMIT 1");
+    }
+    $privateFileStatistics = $user->privateFileStatistics;
+}
+
+// check for existing avatar
+$hasAvatar = false;
+$avatarCachePath = 'user/'.(int)$Auth->id.'/profile/avatar_original.jpg';
+if(cache::checkCacheFileExists($avatarCachePath))
+{
+	$hasAvatar = true;
+}
+
+// include header
+require_once(SITE_TEMPLATES_PATH . '/partial/_header_file_manager.inc.php');
+
+// file manager javascript
+require_once(SITE_TEMPLATES_PATH . '/partial/_account_home_javascript.inc.php');
+
+if (notification::isSuccess())
+{
+    echo templateFunctions::outputSuccess();
+}
+elseif (notification::isErrors())
+{
+    echo templateFunctions::outputErrors();
+}
+?>
+<script>
+$(document).ready(function(){
+$(".showLostPass").click(function(){
+    $(".lostPass").toggle(0, 
+        function () { 
+            $( ".fa-plus-square-o" ).hide();
+        },                
+        function () {
+            $( "fa-minus-square-o" ).show();
+        });        
+    });
+});s
+</script>
+<div class="main-content">
+    <ol class="breadcrumb bc-3">
+        <li>
+            <a href="<?php echo WEB_ROOT; ?>/account_home.<?php echo SITE_CONFIG_PAGE_EXTENSION; ?>"><i class="entypo-home"></i>ึ๗าณ</a>
+        </li>
+        <li class="active">
+            <strong><?php echo t("account_details", "Account Details"); ?></strong>
+        </li>
+    </ol>
+    <h2><?php echo t("account_details", "Account Details"); ?></h2>
+    <br/>
+    
+    <div class="row">
+        <div class="col-sm-3 responsive-column">
+            <div class="tile-stats tile-red">
+                <div class="icon"><i class="entypo-drive"></i></div>
+                <?php if($totalFreeSpace !== NULL): ?>
+                    <div data-delay="0" data-duration="1500" data-decimals="2" data-postfix="&nbsp;<?php echo validation::safeOutputToScreen(coreFunctions::formatSize($totalFreeSpace, 'ext', false)); ?>" data-end="<?php echo validation::safeOutputToScreen(coreFunctions::formatSize($totalFreeSpace, 'size', false)); ?>" data-start="0" class="num">-</div>
+                <?php else: ?>
+                    <div class="num"><?php echo t("unlimited", "Unlimited"); ?></div>
+                <?php endif; ?>
+                <h3><?php echo t("available_storage", "Available Storage"); ?></h3>
+            </div>
+        </div>
+
+        <div class="col-sm-3 responsive-column">
+            <div class="tile-stats tile-green">
+                <div class="icon"><i class="entypo-upload"></i></div>
+                <div data-delay="0" data-duration="1500" data-decimals="2" data-postfix="&nbsp;<?php echo validation::safeOutputToScreen(coreFunctions::formatSize($totalActiveFileSize, 'ext')); ?>" data-end="<?php echo validation::safeOutputToScreen(coreFunctions::formatSize($totalActiveFileSize, 'size')); ?>" data-start="0" class="num">-</div>
+                <h3><?php echo t("used_storage", "Used Storage"); ?></h3>
+            </div>
+        </div>
+
+        <div class="col-sm-3 responsive-column">
+            <div class="tile-stats tile-aqua">
+                <div class="icon"><i class="entypo-doc-text-inv"></i></div>
+                <div data-delay="0" data-duration="1500" data-end="<?php echo validation::safeOutputToScreen($totalActiveFiles); ?>" data-start="0" class="num">-</div>
+                <h3><?php echo t("active_files", "Active Files"); ?></h3>
+            </div>
+        </div>
+
+        <div class="col-sm-3 responsive-column">
+            <div class="tile-stats tile-blue">
+                <div class="icon"><i class="entypo-down"></i></div>
+                <div data-delay="0" data-duration="1500" data-end="<?php echo validation::safeOutputToScreen($totalDownloads); ?>" data-start="0" class="num">-</div>
+                <h3><?php echo t("total_downloads", "Total Downloads"); ?></h3>
+            </div>
+        </div>
+    </div>
+    
+    <br/>
+    
+    <div class="row">
+        <div class="col-md-12">
+        
+        <!-- Security Lock -->
+        <?php if(SITE_CONFIG_SECURITY_ACCOUNT_LOCK == 'yes'): ?>
+        <div data-collapsed="0" class="panel panel-primary">
+        
+            <div class="panel-heading">
+                <div class="panel-title">
+                    <?php echo t('account_edit_security_lock_header', 'Account security lock.'); ?>
+                </div>
+            </div>
+            
+            <div class="panel-body">
+            <form class="form-horizontal form-groups-bordered" role="form" action="<?php echo WEB_ROOT; ?>/account_edit.<?php echo SITE_CONFIG_PAGE_EXTENSION; ?>" method="POST" enctype="multipart/form-data">
+				<div class="form-group">                
+					<label class="col-sm-3 control-label"><?php echo ucwords(t("account_edit_security_lock_description", "Account lock status")); ?></label>
+					<div class="col-sm-5" style="padding-top: 7px;">
+						<?php echo (($lockStatus == 1) ? ('<i class="entypo-lock"></i> <strong>'.t("account_edit_security_locked", "Locked").'</strong>') : ('<i class="entypo-lock-open"></i>'.t("account_edit_security_unlocked", "Unlocked"))); ?> 
+						<br/><br/>
+						<?php echo t('account_lock_long_description', 'The account security lock, when enabled, prevents your account details (name, email, password) from being edited, it also prevents files from being edited, moved and deleted.<br/><br/>To unlock your account, you will need the password which is emailed to your registered email address when the lock is enabled.'); ?>
+					</div>
+				</div>
+                
+            <?php if($lockStatus == 1): ?>
+                <div class="form-group">
+					<label class="col-sm-3 control-label"><?php echo ucwords(t("account_edit_security_lock_code", "Account lock code")); ?></label>
+					<div class="col-sm-5" style="padding-top: 7px;">
+                        <input id="accountCode" name="accountCode" type="text" tabindex="99" value="" class="form-control"/>
+					</div>
+				</div>
+                
+                <div class="form-group">
+					<div class="col-sm-offset-3 col-sm-5">
+						<input type="hidden" value="1" name="unlockAccount"/>
+						<button class="btn btn-info" type="submit"><?php echo UCWords(t("deactivate_security_lock", "De-activate security lock")); ?> <i class="entypo-lock-open"></i></button>&nbsp;&nbsp;<small class="showLostPass" style="cursor: pointer;">Lost Unlock code? <i class="fa fa-plus-square-o"></i><i class="fa fa-minus-square-o" style="display:none;"></i></small>
+					</div>
+				</div>
+            </form>
+            
+            <form class="form-horizontal form-groups-bordered" role="form" action="<?php echo WEB_ROOT; ?>/account_edit.<?php echo SITE_CONFIG_PAGE_EXTENSION; ?>?rs=1" method="POST" enctype="multipart/form-data">
+                <div class="form-group lostPass" style="display:none; padding-top: 15px;">
+					<div class="col-sm-offset-3 col-sm-5">
+						<input type="hidden" value="1" name="resendCode"/>
+						<button class="btn btn-primary" type="submit"><?php echo UCWords(t("deactivate_security_lock_resend_code", "Resend security code")); ?> <i class="entypo-mail"></i></button>
+					</div>
+				</div>
+            </form>
+            
+            <?php elseif($lockStatus == 0): ?>
+            <form class="form-horizontal form-groups-bordered" role="form" action="<?php echo WEB_ROOT; ?>/account_edit.<?php echo SITE_CONFIG_PAGE_EXTENSION; ?>" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+					<div class="col-sm-offset-3 col-sm-5">
+						<input type="hidden" value="1" name="secureAccount"/>
+						<button class="btn btn-info" type="submit"><?php echo UCWords(t("activate_security_lock", "Activate security lock")); ?> <i class="entypo-lock"></i></button>
+					</div>
+				</div>
+            </form>
+            <?php endif; ?>
+            </div>
+        </div>
+        <?php endif; ?>       
+        <!-- Security Lock -->
+        
+		<form class="form-horizontal form-groups-bordered" role="form" action="<?php echo WEB_ROOT; ?>/account_edit.<?php echo SITE_CONFIG_PAGE_EXTENSION; ?>" method="POST" enctype="multipart/form-data">
+		<?php if($lockStatus == 0): ?>
+
+			<?php 
+			$userType = $db->getValue('SELECT level_type FROM user_level WHERE id = '.$user->level_id.' LIMIT 1');
+			if(in_array($userType, array('paid', 'admin', 'moderator'))):
+			?>
+				<div data-collapsed="0" class="panel panel-primary">
+				
+					<div class="panel-heading">
+						<div class="panel-title">
+							<?php echo t('paid_account_expiry_section_header', 'Premium account expiry details.'); ?>
+						</div>
+					</div>
+					
+					<div class="panel-body">
+						<div class="form-group">
+							<label class="col-sm-3 control-label"><?php echo ucwords(t("account_home_expiry_date", "Account expiry date")); ?></label>
+							<div class="col-sm-5" style="padding-top: 7px;">
+								<?php echo(in_array($userType, array('admin', 'moderator'))) ? UCWords(t('never', 'never')) : coreFunctions::formatDate($user->paidExpiryDate); ?>
+							</div>
+						</div>
+					</div>
+				</div>
+			<?php endif; ?>
+	
+			<div data-collapsed="0" class="panel panel-primary">
+				<div class="panel-heading">
+					<div class="panel-title">
+						<?php echo t('keep_your_account_details_up_to_date_below', 'Keep your account details up to date below.'); ?>
+					</div>
+				</div>
+
+				<div class="panel-body">
+					<div class="form-group">
+						<label class="col-sm-3 control-label" for="title"><?php echo t("title", "Title"); ?></label>
+						<div class="col-sm-5">
+							<select id="title" name="title" class="form-control" tabindex="1" data-content="<?php echo validation::safeOutputToScreen(t('your_title', 'Your title')); ?>" data-placement="right" data-trigger="hover focus" data-container="body" data-toggle="popover">
+								<option value="Mr" <?php echo ($title == 'Mr')?'SELECTED':''; ?>><?php echo t('title_mr', 'Mr'); ?></option>
+								<option value="Ms" <?php echo ($title == 'Ms') ? 'SELECTED' : ''; ?>><?php echo t('title_ms', 'Ms'); ?></option>
+								<option value="Mrs" <?php echo ($title == 'Mrs')?'SELECTED':''; ?>><?php echo t('title_mrs', 'Mrs'); ?></option>
+								<option value="Miss" <?php echo ($title == 'Miss')?'SELECTED':''; ?>><?php echo t('title_miss', 'Miss'); ?></option>
+								<option value="Dr" <?php echo ($title == 'Dr')?'SELECTED':''; ?>><?php echo t('title_dr', 'Dr'); ?></option>
+								<option value="Pro" <?php echo ($title == 'Pro')?'SELECTED':''; ?>><?php echo t('title_pro', 'Pro'); ?></option>
+							</select>
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-3 control-label" for="firstname"><?php echo t("firstname", "Firstname"); ?></label>
+						<div class="col-sm-5">
+							<input id="firstname" name="firstname" type="text" tabindex="2" value="<?php echo isset($firstname) ? validation::safeOutputToScreen($firstname) : ''; ?>" class="form-control" data-content="<?php echo validation::safeOutputToScreen(t('your_firstname', 'Your firstname')); ?>" data-placement="right" data-trigger="hover focus" data-container="body" data-toggle="popover">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-3 control-label" for="lastname"><?php echo t("lastname", "Lastname"); ?></label>
+						<div class="col-sm-5">
+							<input id="lastname" name="lastname" type="text" tabindex="3" value="<?php echo isset($lastname) ? validation::safeOutputToScreen($lastname) : ''; ?>" class="form-control" data-content="<?php echo validation::safeOutputToScreen(t('your_lastname', 'Your lastname')); ?>" data-placement="right" data-trigger="hover focus" data-container="body" data-toggle="popover">
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-3 control-label" for="emailAddress"><?php echo t("email_address", "Email Address"); ?></label>
+						<div class="col-sm-5">
+							<input id="emailAddress" name="emailAddress" type="text" tabindex="4" value="<?php echo isset($emailAddress) ? validation::safeOutputToScreen($emailAddress) : ''; ?>" class="form-control" data-content="<?php echo validation::safeOutputToScreen(t('your_new_email_address', 'Your new email address')); ?>" data-placement="right" data-trigger="hover focus" data-container="body" data-toggle="popover">
+						</div>
+					</div>
+					
+					<?php
+					// language selector
+					if(SITE_CONFIG_LANGUAGE_USER_SELECT_LANGUAGE == 'yes')
+					{
+						$activeLanguages = $db->getRows("SELECT id, languageName FROM language WHERE isActive = 1 ORDER BY languageName ASC");
+						if (COUNT($activeLanguages))
+						{
+							?>
+							<div class="form-group">
+								<label class="col-sm-3 control-label" for="languageId"><?php echo t("language", "Language"); ?></label>
+								<div class="col-sm-5">
+									<select id="languageId" name="languageId" class="form-control" tabindex="7" data-content="<?php echo validation::safeOutputToScreen(t('settings_tip_site_language', 'The language to use on the site.')); ?>" data-placement="right" data-trigger="hover focus" data-container="body" data-toggle="popover">
+										<?php
+											foreach ($activeLanguages AS $activeLanguage)
+											{
+												echo '<option value="'.$activeLanguage['id'].'"';
+												if($languageId == $activeLanguage['id'])
+												{
+													echo ' SELECTED';
+												}
+												echo '>'.  validation::safeOutputToScreen($activeLanguage['languageName']).'</option>';
+											}
+										?>
+									</select>
+								</div>
+							</div>
+							<?php
+						}
+					}
+					?>
+					
+					<div class="form-group">
+						<label class="col-sm-3 control-label" for="privateFileStatistics"><?php echo t("file_statistics", "File Statistics"); ?></label>
+						<div class="col-sm-5">
+							<select id="privateFileStatistics" name="privateFileStatistics" class="form-control" tabindex="8" data-content="<?php echo validation::safeOutputToScreen(t('settings_tip_file_statistics', 'Whether to keep all file stats private or allow public access.')); ?>" data-placement="right" data-trigger="hover focus" data-container="body" data-toggle="popover">
+								<?php
+								$optionsArr = array('0'=>t('settings_statistics_public', 'Publicly Accessible (using ~s on url)'), '1'=>t('settings_statistics_private', 'Private (only via your account)'));
+								foreach ($optionsArr AS $k=>$option)
+								{
+									echo '<option value="'.$k.'"';
+									if($privateFileStatistics == $k)
+									{
+										echo ' SELECTED';
+									}
+									echo '>'.  validation::safeOutputToScreen($option).'</option>';
+								}
+								?>
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+		
+			<?php if(SITE_CONFIG_FORCE_FILES_PRIVATE == 'no'): ?>
+				<div data-collapsed="0" class="panel panel-primary">
+					<div class="panel-heading">
+						<div class="panel-title">
+							<?php echo ucwords(t("file_privacy", "File Privacy")); ?>.
+						</div>
+					</div>
+
+					<div class="panel-body">
+						<div class="form-group">
+							<label class="col-sm-3 control-label" for="isPublic"><?php echo ucwords(t("file_privacy", "File Privacy")); ?></label>
+							<div class="col-sm-5">
+								<select id="isPublic" name="isPublic" class="form-control" tabindex="8" data-content="<?php echo validation::safeOutputToScreen(t('settings_tip_private_files', 'Whether to keep all files private or allow sharing.')); ?>" data-placement="right" data-trigger="hover focus" data-container="body" data-toggle="popover">  
+								<?php if($user->isPublic == 1): ?>                          
+									<option value="1" selected="selected"><?php echo t('settings_public_files', 'All Files Publicly Accessible'); ?></option>
+									<option value="0"><?php echo t('settings_private_files', 'All Files Private (only via your account)'); ?></option>
+								<?php elseif($user->isPublic == 0): ?>
+									<option value="1"><?php echo t('settings_public_files', 'All Files Publicly Accessible'); ?></option>
+									<option value="0" selected="selected"><?php echo t('settings_private_files', 'All Files Private (only via your account)'); ?></option>
+								<?php endif; ?>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div>
+			<?php endif; ?>
+		<?php endif; ?>
+		
+	    <?php if($lockStatus == 0): ?>
+           <div data-collapsed="0" class="panel panel-primary">
+               <div class="panel-heading">
+                    <div class="panel-title">
+                        <?php echo t('account_settings_change_password', 'Change password.'); ?>
+                    </div>
+                </div>
+
+                <div class="panel-body">
+					<div class="form-group">
+						<label class="col-sm-3 control-label" for="password"><?php echo t("change_password", "Change Password"); ?></label>
+						<div class="col-sm-5">
+							<input id="password" name="password" type="password" tabindex="5" value="" class="form-control" data-content="<?php echo validation::safeOutputToScreen(t('a_new_account_password_leave_blank_to_keep', 'Optional. A new account password, leave this blank to keep your existing.')); ?>" data-placement="right" data-trigger="hover focus" data-container="body" data-toggle="popover" />
+						</div>
+					</div>
+                    
+					<br />
+                    
+					<div class="form-group">
+						<label class="col-sm-3 control-label" for="passwordConfirm"><?php echo t("confirm_password_edit", "Confirm Password"); ?></label>
+						<div class="col-sm-5">
+							<input id="passwordConfirm" name="passwordConfirm" type="password" tabindex="6" value="" class="form-control" data-content="<?php echo validation::safeOutputToScreen(t('a_new_account_password_confirm_leave_blank_to_keep', 'Optional. Confirm the password entered above, leave this blank to keep your existing.')); ?>" data-placement="right" data-trigger="hover focus" data-container="body" data-toggle="popover" />
+						</div>
+					</div>
+                </div>
+            </div>
+        <?php endif; ?>
+    
+    	<?php if($lockStatus == 0): ?>
+            <div data-collapsed="0" class="panel panel-primary">
+                <div class="panel-heading">
+                    <div class="panel-title">
+                        <?php echo t('account_settings_avatar', 'Account avatar.'); ?>
+                    </div>
+                </div>
+
+                <div class="panel-body">
+					<?php
+					// do plugin includes, i.e. override avatar with social login one
+					$params = pluginHelper::includeAppends('account_avatar.php', array('photoURL' => null));
+					if(strlen($params['photoURL']) == 0)
+					{
+					?>
+					<div class="form-group">
+						<label for="avatar" class="col-sm-3 control-label"><?php echo t('account_settings_avatar_file', 'Select File (jpg, png or gif)'); ?></label>
+						<div class="col-sm-5">
+							<input type="file" class="form-control" id="avatar" name="avatar" placeholder="<?php echo t('account_settings_avatar_file', 'Select File (jpg, png or gif)'); ?>">
+							<?php if($hasAvatar == true): ?>
+							<br/>
+							<img class="img-square settings-avatar" alt="Adam" src="<?php echo CORE_PAGE_WEB_ROOT; ?>/account_view_avatar.php?width=44&amp;height=44">
+							<div class="checkbox" style="float: left;">
+								<label>
+									<input type="checkbox" id="removeAvatar" name="removeAvatar" value="1"/><?php echo t('account_settings_avatar_remove', 'Remove avatar'); ?>
+								</label>
+							</div>
+							<?php endif; ?>
+						</div>
+					</div>
+					<?php
+					}
+					?>
+
+					<div class="form-group">
+						<div class="col-sm-offset-3 col-sm-5">
+							<input type="hidden" value="1" name="submitme"/>
+							<button class="btn btn-info" type="submit"><?php echo UCWords(t("update_account", "update account")); ?> <i class="entypo-check"></i></button>
+						</div>
+					</div>
+                </div>
+            </div>
+		<?php endif; ?>
+		</form>
+        </div>
+    </div>
+    
+	
+</div>
+
+<?php
+// include footer
+require_once(SITE_TEMPLATES_PATH . '/partial/_footer_file_manager.inc.php');
+?>

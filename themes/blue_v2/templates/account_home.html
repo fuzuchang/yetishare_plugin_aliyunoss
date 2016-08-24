@@ -1,0 +1,268 @@
+<?php
+// require login
+$Auth->requireUser(WEB_ROOT . '/login.' . SITE_CONFIG_PAGE_EXTENSION);
+
+// per page options
+$perPageOptions = array(15, 30, 50, 100, 250);
+$defaultPerPage = 100;
+
+// load all files
+$sQL = "SELECT COUNT(id) FROM file WHERE userId = " . (int) $Auth->id . " AND statusId = 1";
+$totalActive = $db->getValue($sQL);
+
+// load all trash
+$sQL = "SELECT COUNT(id) FROM file WHERE userId = " . (int) $Auth->id . " AND statusId != 1";
+$totalTrash = $db->getValue($sQL);
+
+// setup order by options
+$orderByOptions = array();
+$orderByOptions['order_by_filename_asc'] = 'Filename ASC';
+$orderByOptions['order_by_filename_desc'] = 'Filename DESC';
+$orderByOptions['order_by_uploaded_date_asc'] = 'Uploaded Date ASC';
+$orderByOptions['order_by_uploaded_date_desc'] = 'Uploaded Date DESC';
+$orderByOptions['order_by_downloads_asc'] = 'Downloads ASC';
+$orderByOptions['order_by_downloads_desc'] = 'Downloads DESC';
+$orderByOptions['order_by_filesize_asc'] = 'Filesize ASC';
+$orderByOptions['order_by_filesize_desc'] = 'Filesize DESC';
+$orderByOptions['order_by_last_access_date_asc'] = 'Last Access Date ASC';
+$orderByOptions['order_by_last_access_date_desc'] = 'Last Access Date DESC';
+
+// handle screen messages
+if (isset($_REQUEST['s']))
+{
+    $s = $_REQUEST['s'];
+    $s = validation::safeOutputToScreen($s);
+    notification::setSuccess($s);
+}
+
+/* setup page */
+define("PAGE_NAME", t("account_home_page_name", "Account Home"));
+define("PAGE_DESCRIPTION", t("account_home_meta_description", "Your Account Home"));
+define("PAGE_KEYWORDS", t("account_home_meta_keywords", "account, home, file, your, interface, upload, download, site"));
+
+// include header
+require_once(SITE_TEMPLATES_PATH . '/partial/_header.inc.php');
+?>
+
+<link rel="stylesheet" href="<?php echo SITE_CSS_PATH; ?>/colorbox.css" type="text/css" charset="utf-8" />
+<link rel="stylesheet" href="<?php echo SITE_CSS_PATH; ?>/file_browser_sprite_48px.css" type="text/css" charset="utf-8" />
+
+<script type="text/javascript" src="<?php echo SITE_JS_PATH; ?>/jquery.ckie.js"></script>
+<script type="text/javascript" src="<?php echo SITE_JS_PATH; ?>/jquery.jstree.js"></script>
+<script type="text/javascript" src="<?php echo SITE_JS_PATH; ?>/jquery.colorbox-min.js"></script>
+<script type="text/javascript" src="<?php echo _CONFIG_SITE_PROTOCOL; ?>://s7.addthis.com/js/250/addthis_widget.js#pubid=xa-4f10918d56581527"></script>
+<script type="text/javascript" src="<?php echo SITE_JS_PATH; ?>/jquery.event.drag-2.2.js"></script>
+<script type="text/javascript" src="<?php echo SITE_JS_PATH; ?>/jquery.event.drag.live-2.2.js"></script>
+<script type="text/javascript" src="<?php echo SITE_JS_PATH; ?>/jquery.event.drop-2.2.js"></script>
+<script type="text/javascript" src="<?php echo SITE_JS_PATH; ?>/jquery.event.drop.live-2.2.js"></script>
+
+<?php
+// file manager javascript
+require_once(SITE_TEMPLATES_PATH . '/partial/_file_manager_javascript.inc.php');
+?>
+<div id="fileUploadWrapper" style="display:none;" class="fileUploadWrapperAccountHome">
+    <?php
+// uploader code
+    require_once(SITE_TEMPLATES_PATH . '/partial/_uploader.inc.php');
+    ?>
+</div>
+<img src="<?php echo SITE_IMAGE_PATH; ?>/file_icons/sprite_48px.png" style="width: 1px; height:1px; position: absolute; top: -99999px;"/>
+<div class="contentPageWrapper">
+    <?php
+    if (notification::isSuccess())
+    {
+        echo notification::outputSuccess();
+    }
+    elseif (notification::isErrors())
+    {
+        echo notification::outputErrors();
+    }
+    ?>
+    <!-- main section -->
+    <div class="pageSectionFileManagerFull">
+        <div id="fileManagerWrapper" class="fileManagerWrapper">
+            <div class="fileManagerMain">
+                <div class="folderDropdown">
+                    <?php
+                    // load all folders for responsive theme
+                    $folders = fileFolder::loadAllForSelect($Auth->id);
+                    $selectHtml = '<select name="folderIdDropdown" id="folderIdDropdown" onChange="$(\'#nodeId\').val($(this).val()); loadFiles(); return false;">';
+                    $selectHtml .= '<option value="-1">' . t('your_uploads', 'Your Uploads') . '</option>';
+                    if (COUNT($folders))
+                    {
+                        foreach ($folders AS $k => $folder)
+                        {
+                            $selectHtml .= '<option value="' . (int) $k . '">- ' . validation::safeOutputToScreen($folder) . '</option>';
+                        }
+                    }
+                    $selectHtml .= '</select>';
+
+                    // output select
+                    echo $selectHtml;
+                    ?>
+                </div>
+                <table style="width: 100%;" class="fileManagerMainTable" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td class="folderTreeCell responsiveHide"><div id="folderTreeview" class="folderTreeview responsiveHide"></div></td>
+                        <td class="dividerCell responsiveHide"></td>
+                        <td class="fileManagerCell">
+                            <div class="customFilter" id="customFilter">
+                                <div class="actions button-container">
+                                    <div class="button-group minor-group">
+                                        <a id="toggleFiltersLink" href="#" class="button primary icon search" onClick="toggleFilters();
+                                                return false;"><?php echo t('filter', 'Filter'); ?></a>
+                                    </div>
+
+                                    <div class="button-group minor-group">
+                                        <a href="#" id="uploadToolbarButton" onClick="uploadFiles();
+                                                return false;" class="button icon arrowup"><?php echo t('upload_account', 'Upload'); ?></a>
+                                        <?php if(coreFunctions::getUsersAccountLockStatus($Auth->id) == 0): ?>
+                                        <a href="#" onClick="addFolder();
+                                                return false;" class="button icon add"><?php echo t('add_folder', 'Add Folder'); ?></a>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <div class="button-group minor-group reponsiveMobileHide" id="viewFileLinks">
+                                        <a href="#" onClick="viewFileLinks();
+                                                return false;" class="button icon favorite"><?php echo t('file_manager_links', 'Links'); ?></a>
+                                        <?php if(coreFunctions::getUsersAccountLockStatus($Auth->id) == 0): ?>
+                                        <a href="#" onClick="deleteFiles();
+                                                return false;" class="button icon trash"><?php echo t('file_manager_delete', 'Delete'); ?></a>
+                                        <?php endif; ?>
+                                    </div>
+
+                                    <div class="button-group minor-group responsiveHide">
+                                        <a href="#" onClick="toggleFullScreen();
+                                                return false;" class="button icon move"><span id="fullscreenText"><?php echo t('fullscreen', 'Fullscreen'); ?></span></a>
+                                        <a href="#" onClick="toggleViewType();
+                                                return false;" class="button icon calendar"><span id="viewTypeText"><?php echo t('list_view', 'List View'); ?></span></a>
+                                        <a href="#" onClick="toggleTreeView();
+                                                return false;" class="button icon fork notext" title="<?php echo t('hide_tree', 'Hide Tree'); ?>" id="toggleTreeViewText">&nbsp;</a>
+                                        <a href="#" onClick="refreshFileListing();
+                                                return false;" class="button icon reload notext" title="<?php echo t('refresh', 'Refresh'); ?>">&nbsp;</a>
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                                <div id="filterElements" class="filterElements" style="display: none;">
+                                    <label for="filterText">
+                                        <?php echo t('filter', 'Filter'); ?>:
+                                        <input name="filterText" class="filterText" id="filterText" type="text" value="<?php echo isset($filterText) ? validation::safeOutputToScreen($filterText) : ''; ?>"/>
+                                    </label>
+                                    <label for="filterUploadedDateRange" style="padding-left: 6px;">
+                                        <?php echo t('upload_date', 'Upload Date'); ?>:
+                                        <div id="uploadedDateRangePicker" class="datepicker">
+                                            <input name="filterUploadedDateRange" class="filterUploadedDateRange" id="filterUploadedDateRange" value="<?php echo isset($filterUploadedDateRange) ? validation::safeOutputToScreen($filterUploadedDateRange) : ''; ?>"/>
+                                            <div style="position: absolute; z-index: 1;"></div>
+                                        </div>
+                                    </label>
+                                    <label for="filterOrderBy" style="padding-left: 6px;">
+                                        <?php echo t('order_by', 'Order By'); ?>:
+                                        <select name="filterOrderBy" id="filterOrderBy" class="filterOrderBy" onChange="doFilter();
+                                                return false;">
+                                                    <?php
+                                                    foreach ($orderByOptions AS $k => $orderByOption)
+                                                    {
+                                                        echo '<option value="' . $k . '">';
+                                                        echo validation::safeOutputToScreen(t($k, $orderByOption));
+                                                        echo '</option>';
+                                                    }
+                                                    ?>
+                                        </select>
+                                    </label>
+                                    <div class="actions button-container">
+                                        <div class="button-group minor-group">
+                                            <a href="#" onClick="doFilter();
+                                                    return false;" class="button icon approve"><?php echo t('update', 'Update'); ?></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                            <div id="fileManager" class="fileManager fileManagerIcon"></div>
+                            <div class="clear"></div>
+                            <div class="pagingWrapper" id="pagingWrapper">
+                                <div class="pagingSelector">
+                                    <label>
+                                        <?php echo UCWords(t('account_home_per_page', 'Per Page:')); ?>
+                                    </label>
+                                    <select id="perPageElement" onChange="setPerPage();
+                                            return false;">
+                                                <?php
+                                                foreach ($perPageOptions AS $perPageOption)
+                                                {
+                                                    echo '<option value="' . $perPageOption . '"';
+                                                    if ($perPageOption == $defaultPerPage)
+                                                    {
+                                                        echo ' SELECTED';
+                                                    }
+                                                    echo '>';
+                                                    echo $perPageOption;
+                                                    echo '</option>';
+                                                }
+                                                ?>
+                                    </select>
+                                </div>
+                                <div class="rightSection">
+                                    <div class="actions button-container">
+                                        <div class="button-group minor-group">
+                                            <a href="#" onClick="loadPreviousPage();
+                                                    return false;" class="button icon arrowleft" id="previousLink"><?php echo t('previous', 'previous'); ?></a>
+                                            <div class="currentPageText button"></div>
+                                            <a href="#" onClick="loadNextPage();
+                                                    return false;" class="button icon arrowright" id="nextLink"><?php echo t('next', 'next'); ?></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="clear"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <div class="statusBar">
+                                <span id="statusText"><?php echo t('status_text', 'Status Text'); ?></span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <input id="nodeId" type="hidden" value="-1"/>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="popupContentWrapper" style="display: none;">
+    <div id="popupContent" class="popupContent">
+        <div id="pageHeader">
+            <div class="pageHeaderPopupButtons">
+                <div class="actions button-container">
+                    <div class="button-group minor-group">
+                        <a href="#" onClick="toggleUrlDiv('popupContentUrls');
+                                return false;" class="button popupContentUrlsButton"><?php echo t('file_urls', 'File Urls'); ?></a>
+                        <a href="#" onClick="toggleUrlDiv('popupContentHTMLCode');
+                                return false;" class="button popupContentHTMLCodeButton"><?php echo t('urls_html_code', 'HTML Code'); ?></a>
+                        <a href="#" onClick="toggleUrlDiv('popupContentBBCode');
+                                return false;" class="button popupContentBBCodeButton"><?php echo t('urls_bbcode', 'Forum BBCode'); ?></a>
+                    </div>
+                </div>
+            </div>
+            <div id="urlLinkHeader">
+                <h2></h2>
+            </div>
+        </div>
+        <div id="popupContentUrls" class="popupContentUrlDiv"></div>
+        <div id="popupContentHTMLCode" class="popupContentUrlDiv"></div>
+        <div id="popupContentBBCode" class="popupContentUrlDiv"></div>
+
+        <div class="clear"></div>
+    </div>
+</div>
+<div id="filePopupContentWrapper" style="display: none;">
+    <div id="filePopupContent" class="filePopupContent"></div>
+</div>
+<div id="filePopupContentWrapperNotice" style="display: none;">
+    <div id="filePopupContentNotice" class="filePopupContentNotice"></div>
+</div>
+<?php
+// include footer
+require_once(SITE_TEMPLATES_PATH . '/partial/_footer.inc.php');
+?>

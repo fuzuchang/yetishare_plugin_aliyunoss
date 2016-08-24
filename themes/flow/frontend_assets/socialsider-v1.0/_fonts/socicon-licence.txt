@@ -1,0 +1,2 @@
+Socicon is released under SIL Open Font License 1.1 (http://scripts.sil.org/OFL).
+You are free to use it on your website or project. 

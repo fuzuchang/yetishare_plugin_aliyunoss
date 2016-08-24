@@ -1,0 +1,1 @@
+document.write('<div style="display:none;" id="bannerad">some banner ad</div>');

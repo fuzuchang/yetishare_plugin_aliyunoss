@@ -1,0 +1,121 @@
+.links a {
+	color: #00aded;
+}
+address a {
+	color: #00aded;
+}
+.cube1, .cube2 {
+	background-color: #00aded;
+}
+.color-text {
+	color: #00aded;
+}
+.colored-bg {
+	color: #fff;
+background-color: #00aded;
+}
+.bluish-grey-bg {
+	background-color: #00aded;
+}
+.dark-bluish-grey-bg {
+	background-color: #00aded;
+}
+.tp-banner .slider-btn {
+	border: 2px solid #00aded;
+	background-color: #00aded;
+}
+#navigation ul.nav a:hover {
+	color: #00aded;
+}
+#navigation ul.nav .current a {
+	color: #00aded;
+}
+.fun-facts .white-box {
+	color: #00aded;
+}
+.fun-facts .white-box:hover {
+	background-color: #00aded;
+}
+#services .s-items a:hover {
+	color: #00aded;
+}
+#services .s-items:hover a {
+	color: #00aded;
+}
+.icons {
+	background-color: #00aded;
+	border: 2px solid #00aded;
+}
+.icons:hover {
+	color: #00aded;
+	border: 2px solid #00aded;
+}
+.services-detail .heading {
+	color: #00aded;
+}
+.services-detail .close-detail a {
+	color: #00aded;
+}
+.services-detail .close-detail:hover a {
+	color: #00aded;
+}
+#options ul li:hover a, #options ul li a.selected {
+	border: 1px solid #00aded;
+	background-color: #00aded;
+}
+#container-thumbs .items .picture {
+	background: #00aded;
+}
+#container-thumbs .items .details {
+	background: #00aded;
+}
+.portfolio-detail .items .details {
+	background: #00aded;
+}
+.portfolio-detail .heading {
+	color: #00aded;
+}
+ul.social-icons li a:hover {
+	background-color: #00aded;
+}
+.team-members .details {
+	background: #00aded;
+}
+.team-members:hover .details {
+	background: #00aded;
+}
+.team-members .picture {
+	background: #00aded;
+}
+.post .picture {
+	background: #00aded;
+}
+.post .details {
+	background: #00aded;
+}
+.post .description a.blog-btn {
+	color: #00aded;
+}
+.post .description a:hover.blog-btn {
+	color: #00aded;
+}
+#blog .social-icons ul li a:hover {
+	background-color: #00aded;
+}
+.post-comment .btn-default {
+	background-color: #00aded;
+	border-color: #00aded;
+}
+.tag-list a:hover {
+	background-color: #00aded;
+}
+.form-control:focus {
+	border-color: #00aded;
+}
+.btn-default {
+	background-color: #00aded;
+	border-color: #00aded
+}
+.scrollup {
+	background-color: #00aded;
+}

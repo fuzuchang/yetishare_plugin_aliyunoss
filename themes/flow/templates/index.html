@@ -1,0 +1,144 @@
+<?php
+// make sure this is the main site, only uploads on the main site are permitted
+coreFunctions::mainSiteAccessOnly();
+
+// setup page
+define("PAGE_NAME", t("index_page_name", "Upload Files"));
+define("PAGE_DESCRIPTION", t("index_meta_description", "Upload, share, track, manage your files in one simple to use file host."));
+define("PAGE_KEYWORDS", t("index_meta_keywords", "upload, share, track, file, hosting, host"));
+define('RESPONSIVE_SELECTED_PAGE', 'home');
+define('CURRENT_PAGE_KEY', 'index');
+
+// include header
+require_once(SITE_TEMPLATES_PATH . '/partial/_header.inc.php');
+?>
+<script>
+    $(document).ready(function() {
+        createSlowGauge();
+        createFastGauge();
+    });
+</script>
+<section data-animation-delay="0" data-animation="fadeInUp" class="animated fadeInUp visible homepage-section-1 homepage-section" id="manage">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <div class="animated heading-1" data-animation="fadeInUp" data-animation-delay="500"><?php echo t('store_and_manage_all_your_files', 'Store and manage all your files!'); ?></div>
+                <div class="animated description-1" data-animation="fadeInUp" data-animation-delay="600"><?php echo t('upload_multiple_files_at_once_and_keep_them', 'Upload multiple files at once and keep them forever on this site. If you\'re using FireFox or Chrome, you can simply drag &amp; drop your files to begin uploading.'); ?></div>                
+                <div class="animated" data-animation="bounceIn" data-animation-delay="400">
+                    <img src="<?php echo SITE_THEME_PATH; ?>/frontend_assets/images/file_manager_responsive.png" alt="" class="main-image"/> 
+                </div>    
+            </div>
+            <div class="col-md-12 text-center homepage-next-section">
+                <a href="#share" class="smooth-anchor-link"><i class="fa fa-chevron-circle-down"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+<section data-animation-delay="0" data-animation="fadeInUp" class="animated fadeInUp visible homepage-section-2 homepage-section" id="share">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <div class="animated heading-1" data-animation="fadeInUp" data-animation-delay="0"><?php echo t('share_your_files_with_everyone', 'Share your files with everyone!'); ?></div>
+                <div class="animated description-1" data-animation="fadeInUp" data-animation-delay="200"><?php echo t('we_supply_you_with_all_the_tools_necessary_to_easily_share', 'We supply you with all the tools necessary to easily share your files. Use our pre-generated html code to link from your website or post directly to Facebook or Twitter.'); ?></div>                
+            </div>
+            <div class="col-md-12 text-center">
+                <div class="share-animated">
+                    <div class="animated" data-animation="fadeInLeft" data-animation-delay="500">
+                        <img src="<?php echo SITE_THEME_PATH; ?>/frontend_assets/images/arrow1.png" style="left: 630px; position: absolute; top: 120px;" alt="">
+                    </div> 
+                    <div class="animated" data-animation="fadeInLeft" data-animation-delay="800">
+                        <img src="<?php echo SITE_THEME_PATH; ?>/frontend_assets/images/arrow2.png" style="left: 630px; position: absolute; top: 190px;" alt="">
+                    </div> 
+                    <div class="animated" data-animation="fadeInLeft" data-animation-delay="1100">
+                        <img src="<?php echo SITE_THEME_PATH; ?>/frontend_assets/images/arrow3.png" style="left: 630px; position: absolute; top: 275px;" alt="">
+                    </div> 
+                    <div class="animated" data-animation="fadeInLeft" data-animation-delay="1400">
+                        <img src="<?php echo SITE_THEME_PATH; ?>/frontend_assets/images/arrow4.png" style="left: 630px; position: absolute; top: 295px;" alt="">
+                    </div> 
+
+                    <div class="animated" data-animation="fadeInAlt" data-animation-delay="500">
+                        <img src="<?php echo SITE_THEME_PATH; ?>/frontend_assets/images/desktop.png" style="left: 130px; position: absolute; top: 90px;" width="500px;" height="405" alt="">
+                    </div> 
+
+                    <div class="animated" data-animation="fadeInAlt" data-animation-delay="500">
+                        <img src="<?php echo SITE_THEME_PATH; ?>/frontend_assets/images/facebook-icon.png" style="left: 830px; position: absolute; top: 30px;" class="social-icon-border" width="80px" alt="">
+                    </div> 
+                    <div class="animated" data-animation="fadeInAlt" data-animation-delay="800">
+                        <img src="<?php echo SITE_THEME_PATH; ?>/frontend_assets/images/google-icon.png" style="left: 950px; position: absolute; top: 140px;" class="social-icon-border" width="80px" alt="">
+                    </div> 
+                    <div class="animated" data-animation="fadeInAlt" data-animation-delay="1100">
+                        <img src="<?php echo SITE_THEME_PATH; ?>/frontend_assets/images/twitter-icon.png" style="left: 950px; position: absolute; top: 320px;" class="social-icon-border" width="80px" alt="">
+                    </div> 
+                    <div class="animated" data-animation="fadeInAlt" data-animation-delay="1400">
+                        <img src="<?php echo SITE_THEME_PATH; ?>/frontend_assets/images/share-icon.png" style="left: 830px; position: absolute; top: 425px;" class="social-icon-border" width="80px" alt="">
+                    </div>
+                </div>
+                <div class="share-static animated" data-animation="bounceIn" data-animation-delay="900">
+                    <img src="<?php echo SITE_THEME_PATH; ?>/frontend_assets/images/desktop.png" alt="" class="main-image"/>
+                </div>
+            </div>
+            <div class="col-md-12 text-center homepage-next-section">
+                <a href="#fast" class="smooth-anchor-link"><i class="fa fa-chevron-circle-down"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+<section data-animation-delay="0" data-animation="fadeInUp" class="animated fadeInUp visible homepage-section-3 homepage-section" id="fast">
+    <div class="container">
+        <div class="row">
+            <div class="text-center">
+                <div class="animated heading-1" data-animation="fadeInUp" data-animation-delay="0"><?php echo t('fast_and_instant_downloading', 'Fast and instant downloading!'); ?></div>
+                <div class="animated description-1" data-animation="fadeInUp" data-animation-delay="200"><?php echo t('our_premium_members_benefit_from_no_waiting_time_and_direct', 'Our premium members benefit from no waiting time and direct downloads for all of their files. Unlike other file hosts we don\'t limit the transfer speed of our downloads.'); ?></div>                
+                <div class="col-md-2"></div>
+                <div class="col-md-4 text-center">
+                    <div class="animated" data-animation="bounceIn" data-animation-delay="300">
+                        <p><?php echo t('index_slow', 'Slow...'); ?></p>
+                        <canvas width=270 height=165 id="canvas-slow"></canvas>
+                    </div>
+                </div> 
+                <div class="col-md-4 text-center">
+                    <div class="animated" data-animation="bounceIn" data-animation-delay="300">
+                        <strong><p><?php echo t('index_super_fast', 'Super Fast!'); ?></p></strong>
+                        <canvas width=270 height=165 id="canvas-fast" ></canvas>
+                    </div>
+                </div>  
+                <div class="col-md-2"></div>
+            </div>
+            <div class="col-md-12 text-center homepage-next-section">
+                <a href="#safe" class="smooth-anchor-link"><i class="fa fa-chevron-circle-down"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+<section data-animation-delay="0" data-animation="fadeInUp" class="animated fadeInUp visible homepage-section-4 homepage-section" id="safe">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <div class="animated heading-1" data-animation="fadeInUp" data-animation-delay="0"><?php echo t('safe_and_secure', 'Safe and Secure'); ?></div>
+                <div class="animated description-1" data-animation="fadeInUp" data-animation-delay="200"><?php echo t('safe_and_secure_description', 'Safely store and backup all your essential files. From family photos & videos to important documents, you can rely on us to store all your media securely and forever.'); ?></div>                
+                <div class="animated" data-animation="bounceIn" data-animation-delay="300">
+                    <img src="<?php echo SITE_THEME_PATH; ?>/frontend_assets/images/safe_secure.png" alt="" class="main-image"/>
+                </div>    
+            </div>
+            <div class="col-md-12 text-center homepage-next-section">
+                <a href="#register"><i class="fa fa-chevron-circle-down"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+<section data-animation-delay="0" data-animation="fadeInUp" class="animated fadeInUp visible homepage-register-section" id="register">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <div class="animated heading-1" data-animation="fadeInUp" data-animation-delay="0"><?php echo t('register_index', 'What are you waiting for?'); ?></div>
+                <div class="animated description-1" data-animation="fadeInUp" data-animation-delay="200">
+                    <a class="btn btn-default btn-lg" href="<?php echo coreFunctions::getCoreSitePath(); ?>/register.<?php echo SITE_CONFIG_PAGE_EXTENSION; ?>"><i class="fa fa-check"></i>&nbsp; <?php echo strtoupper(t('register_index_button', 'Register')); ?></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<?php
+// include footer
+require_once(SITE_TEMPLATES_PATH . '/partial/_footer.inc.php');
+?>

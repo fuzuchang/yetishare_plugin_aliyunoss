@@ -1,0 +1,77 @@
+<?php
+error_reporting(E_ALL);
+// require login
+if (UserPeer::enableUpgradePage() == 'no')
+{
+    // require login
+    $Auth->requireUser(WEB_ROOT . '/login.' . SITE_CONFIG_PAGE_EXTENSION);
+}
+
+// page title
+$title = UCWords(t('extend', 'extend'));
+if ($Auth->level_id <= 1)
+{
+    $title = UCWords(t('upgrade', 'upgrade'));
+}
+
+// setup page
+define("PAGE_NAME", $title . ' ' . UCWords(t("account", "account")));
+define("PAGE_DESCRIPTION", $title . ' ' . t("upgrade_meta_description", "Your Account"));
+define("PAGE_KEYWORDS", strtolower($title) . t("upgrade_meta_keywords", ", account, paid, membership, upload, download, site"));
+
+// include header
+require_once(SITE_TEMPLATES_PATH . '/partial/_header.inc.php');
+?>
+<div class="contentPageWrapper">
+    <div class="pageSectionMainFull ui-corner-all">
+        <div class="pageSectionMainInternal">
+            <?php if ($Auth->loggedIn()): ?>
+                <div id="pageHeader">
+                    <h2><?php echo t("account_status", "account status"); ?></h2>
+                </div>
+                <div style="padding-bottom: 18px;">
+                    <table class="accountStateTable">
+                        <tbody>
+                            <tr>
+                                <td class="first">
+                                    <?php echo UCWords(t('account_type', 'account type')); ?>:
+                                </td>
+                                <td>
+                                    <?php echo t('account_type_' . str_replace(' ', '_', $Auth->level), UCWords($Auth->level)); ?>
+                                </td>
+                            </tr>
+                            <?php if ($Auth->level_id >= 2): ?>
+                                <tr>
+                                    <td class="first">
+                                        <?php echo UCWords(t('reverts_to_free_account', 'reverts to free account')); ?>:
+                                    </td>
+                                    <td>
+                                        <?php echo (($Auth->level_id >= 10) ? UCWords(t('never', 'never')) : coreFunctions::formatDate($Auth->paidExpiryDate)); ?>
+                                    </td>
+                                </tr>
+                            <?php endif ?>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="clear"><!-- --></div>
+            <?php endif; ?>
+            <div id="pageHeader">
+                <h2><?php echo strtolower(PAGE_NAME); ?></h2>
+            </div>
+            <div class="clear"><!-- --></div>
+            <div class="upgradeBoxContainer">
+                <?php include_once(SITE_TEMPLATES_PATH . '/partial/_upgrade_boxes.inc.php'); ?>
+            </div>
+            <div id="pageHeader" style="padding-top: 18px;">
+                <h2><?php echo t("account_benefits", "account benefits"); ?></h2>
+            </div>
+            <div class="clear"><!-- --></div>
+            <?php include_once(SITE_TEMPLATES_PATH . '/partial/_upgrade_benefits.inc.php'); ?>
+        </div>
+    </div>
+</div>
+<div class="clear"></div>
+<?php
+// include footer
+require_once(SITE_TEMPLATES_PATH . '/partial/_footer.inc.php');
+?>

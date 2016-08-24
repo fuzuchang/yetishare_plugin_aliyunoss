@@ -1,0 +1,94 @@
+
+/* =============   FILE MANAGER CUSTOM RESPONSIVE CODE   ============= */  
+
+@media (min-width: 0px) and (max-width: 767px)
+{
+    .page-container.horizontal-menu.with-sidebar .sidebar-menu
+	{
+        top: 0px;
+    }
+	
+	.page-container .sidebar-menu {display: none;}
+	.page-container.horizontal-menu header.navbar .navbar-brand {padding: 14px 20px;}
+	.fileManagerIcon ul.fileListing, .row.breadcrumbs-container .breadcrumb {text-align: center; float: inherit !important;}
+	.fileManagerIcon .fileListing li {margin: 0px 3px 4px 3px !important; }
+	.toolbar-container {left: 0 !important; position: inherit !important;}
+	.file-manager-container {padding-top: 0px !important;}
+}
+
+@media (min-width: 768px) and (max-width: 1253px)
+{
+	.page-container.horizontal-menu header.navbar .navbar-nav > li:nth-child(n+4) > a span {display:none !important;}
+}
+
+@media (max-width: 350px){
+    .fileManagerWrapper .fileManagerList .fileListing li span.filesize { display: none !important; }
+}
+
+@media (max-width: 479px){
+    .viewFileLinks {display:none;}
+    .responsiveMobileMenu {left: -89px;}
+    .responsiveMobileAlign {text-align:center !important; float:none !important;}
+    .responsiveMobileMargin {margin-bottom:5px;}
+    .dropdown-menu li {text-align:left !important;}
+    .fileManagerIcon .fileListing li {margin: 0 3px 3px 0 !important;}
+    .file-manager-container .panel-body {padding: 15px 0 0 !important;}
+    .breadcrumbs-container {padding-left:15px !important;}
+    .fileManagerWrapper .fileManagerList .fileListing li span.downloads { display: none !important;}
+}
+
+@media (max-width: 767px){ 
+    .responsiveMobileHide {display:none;}
+    .responsiveAlign {text-align:center !important; float:none !important;}
+    #folderBreadcrumbs li {max-width:300px !important;}
+}
+
+@media (max-width: 1253px){ 
+.toolbar-container .list-inline {display:none;}
+.toolbar-container .col-md-6 {width:100% !important;}
+}
+
+@media (max-width: 1023px){ 
+    .responsiveHide {display:none;}
+    .responsiveMargin {margin-bottom:5px;}
+    .page-container.sidebar-collapsed .sidebar-user-info .sui-hover {left:0px;}
+    .responsive-column {width: 80% !important; margin-left: 10% !important; margin-right: 10% !important;}
+    .share-file-table-header {width: 30% !important;}  
+    .page-container .sidebar-menu #folderTreeview {margin-bottom:0px;}
+    .popover {display:none !important;}
+    .fileSection a {word-break: break-all; word-wrap: break-word;}
+    .sliderContent img {display:none;}
+    .sliderContent .txtCenter {display:none;}
+    .sliderContent td {word-break: break-all; word-wrap: break-word;}
+    .fileupload-content .url {word-break: break-all; word-wrap: break-word;}
+    .fileManagerWrapper .fileManagerList .fileListing li span.filename {width: 200px !important;}
+    .editFileModal .modal-dialog .modal-header h4 {word-break:break-all;}
+    .shareFolderModal .modal-dialog .modal-content .modal-header .modal-title {word-break:break-all;}
+}
+
+@media (max-width: 1023px){
+    .fileManagerWrapper .fileManagerList .fileListing li span.fileUploadDate { display: none; }
+}
+
+@media (min-width: 767px) and (max-width: 1023px) {
+  .page-container.horizontal-menu header.navbar .navbar-nav > li > a {
+    padding-left: 5px;
+    padding-right: 5px;
+  }
+  .page-container.horizontal-menu header.navbar .navbar-nav > li > a i + span {
+    display: none;
+  }
+  .page-container.Xhorizontal-menu header.navbar .navbar-nav li a,
+  .page-container.Xhorizontal-menu header.navbar .navbar-nav li ul li a,
+  .page-container.Xhorizontal-menu header.navbar ul.nav > li > a {
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 11px;
+  }
+  .page-container.Xhorizontal-menu header.navbar ul > li#search .search-input {
+    width: 150px;
+  }
+  .page-container.Xhorizontal-menu header.navbar ul.nav > li.dropdown .dropdown-menu {
+    width: 315px;
+  }
+}

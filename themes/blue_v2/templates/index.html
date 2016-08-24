@@ -1,0 +1,96 @@
+<?php
+// make sure this is the main site, only uploads on the main site are permitted
+coreFunctions::mainSiteAccessOnly();
+
+// setup page
+define("PAGE_NAME", t("index_page_name", "Upload Files"));
+define("PAGE_DESCRIPTION", t("index_meta_description", "Upload, share, track, manage your files in one simple to use file host."));
+define("PAGE_KEYWORDS", t("index_meta_keywords", "upload, share, track, file, hosting, host"));
+define('RESPONSIVE_SELECTED_PAGE', 'home');
+
+// run any batch tasks
+coreFunctions::executeBatchTasks();
+
+// include header
+require_once(SITE_TEMPLATES_PATH . '/partial/_header.inc.php');
+
+// uploader code
+require_once(SITE_TEMPLATES_PATH . '/partial/_uploader.inc.php');
+?>
+<div class="clear homePageSpacer"><!-- --></div>
+<div class="contentPageWrapper" style="padding-top: 12px;">
+    <div class="floatRight">
+        <?php include_once(SITE_TEMPLATES_PATH . '/partial/_banner_right_content.inc.php'); ?>
+    </div>
+    <div class="fileUploadContent ui-corner-all">
+        <div class="fileUploadContentInternal contentPageWrapper">
+            <div class="left">
+                <div class="homepageInfoOuterWrapper">
+                    <h2><?php echo t('upload_share_and_manage_your_files_for_free', 'Upload, share and manage your files for free.'); ?></h2>
+                    <div class="homepageInfoWrapper">
+                        <div class="icon1"><!-- --></div>
+                        <div class="homepageInfo">
+                            <div class="homepageInfoTitle"><?php echo t('store_and_manage_all_your_files', 'Store and manage all your files!'); ?></div>
+                            <div class="homepageInfoText"><?php echo t('upload_multiple_files_at_once_and_keep_them', 'Upload multiple files at once and keep them forever on this site. If you\'re using FireFox or Chrome, you can simply drag &amp; drop your files to begin uploading.'); ?></div>
+                        </div>
+                        <div class="clear"><!-- --></div>
+                    </div>
+                    <div class="homepageInfoWrapper">
+                        <div class="icon2"><!-- --></div>
+                        <div class="homepageInfo">
+                            <div class="homepageInfoTitle"><?php echo t('share_your_files_with_everyone', 'Share your files with everyone!'); ?></div>
+                            <div class="homepageInfoText"><?php echo t('we_supply_you_with_all_the_tools_necessary_to_easily_share', 'We supply you with all the tools necessary to easily share your files. Use our pre-generated html code to link from your website or post directly to Facebook or Twitter.'); ?></div>
+                        </div>
+                        <div class="clear"><!-- --></div>
+                    </div>
+                    <div class="homepageInfoWrapper">
+                        <div class="icon3"><!-- --></div>
+                        <div class="homepageInfo">
+                            <div class="homepageInfoTitle"><?php echo t('fast_and_instant_downloading', 'Fast and instant downloading!'); ?></div>
+                            <div class="homepageInfoText"><?php echo t('our_premium_members_benefit_from_no_waiting_time_and_direct', 'Our premium members benefit from no waiting time and direct downloads for all of their files. Unlike other file hosts we don\'t limit the transfer speed of our downloads.'); ?></div>
+                        </div>
+                        <div class="clear"><!-- --></div>
+                    </div>
+                    <div class="homepageInfoWrapper">
+                        <div class="icon4"><!-- --></div>
+                        <div class="homepageInfo">
+                            <div class="homepageInfoTitle"><?php echo t('email_large_attachments', 'Email large attachments!'); ?></div>
+                            <div class="homepageInfoText"><?php echo t('no_longer_do_you_have_to_risk_a_large_file_being_bounced_by_a_mail', 'No longer do you have to risk a large file being bounced by a mail server. Upload and send your recipient a link to download the file. You can even track when it\'s been downloaded.'); ?></div>
+                        </div>
+                        <div class="clear"><!-- --></div>
+                    </div>
+                    <div class="clear"><!-- --></div>
+                </div>
+            </div>
+            <div class="clear"><!-- --></div>
+        </div>
+        <div class="clear"><!-- --></div>
+    </div>
+    <div class="clear"><!-- --></div>
+</div>
+
+<?php if (pluginHelper::currentlyInPluginDemoMode()): ?>
+    <script type="text/javascript">
+        $(function() {
+            $("#plugin_notice").dialog({
+                resizable: false,
+                width: 600,
+                modal: true,
+                buttons: {
+                    "Close": function() {
+                        $(this).dialog("close");
+                    }
+                }
+            });
+        });
+    </script>
+    <div id="plugin_notice" title="All Plugins Demo">
+        <p><span class="ui-icon ui-icon-alert" style="float: left; margin: 0 7px 20px 0;"></span>This demo has all the available YetiShare plugins <strong>enabled</strong>.  This includes our FTP Uploader, Rewards Program and the Media Player Plugin.</p>
+        <p> If you want to see what the core script looks like without any plugins, go to <a href="<?php echo WEB_ROOT; ?>/?_p=0"><?php echo WEB_ROOT; ?>/?_p=0</a> or disable them using the link at the top of the page.</p>
+        <p>Click 'close' below to continue to the demo site.</p>
+    </div>
+<?php endif; ?>
+<?php
+// include footer
+require_once(SITE_TEMPLATES_PATH . '/partial/_footer.inc.php');
+?>

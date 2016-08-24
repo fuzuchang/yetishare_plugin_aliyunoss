@@ -1,0 +1,36 @@
+<?php
+/* setup page */
+define("PAGE_NAME", t("error_page_name", "Error"));
+define("PAGE_DESCRIPTION", t("error_meta_description", "Error"));
+define("PAGE_KEYWORDS", t("error_meta_keywords", "error, file, upload, script"));
+define("TITLE_DESCRIPTION_LEFT", t("error_title_page_description_left", ""));
+define("TITLE_DESCRIPTION_RIGHT", t("error_title_page_description_right", ""));
+
+if (!$e = $_REQUEST['e'])
+{
+    $e = t("general_site_error", "There has been an error, please try again later.");
+}
+$e = strip_tags($e);
+
+notification::setError($e);
+
+// include header
+require_once(SITE_TEMPLATES_PATH . '/partial/_header.inc.php');
+?>
+<div class="container">
+    <div class="row">
+        <div class="text-center">
+            <?php echo notification::outputErrors(); ?>
+            <?php
+            if($Auth->level_id <= 1)
+            {
+                include_once(SITE_TEMPLATES_PATH . '/partial/_upgrade_boxes.inc.php');
+            }
+            ?>
+        </div>
+    </div>
+</div>
+<?php
+// include footer
+require_once(SITE_TEMPLATES_PATH . '/partial/_footer.inc.php');
+?>

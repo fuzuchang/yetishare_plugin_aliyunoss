@@ -1,0 +1,105 @@
+
+/* =============   FRONT END CUSTOM RESPONSIVE CODE   ============= */  
+@media (max-width: 479px){
+    .download-table-1 {font-size:13px;}
+    .heading-1 {font-size:20px !important; word-wrap: break-word;}
+    .description-1 {font-size:20px !important;}
+    .mobileHide {display:none !important;}
+    .largeDownloadButtons img {width: 100% !important; height: 100% !important; margin: 0px !important;}
+    .pageSectionMainInternal h2 {font-size:20px !important;}
+}
+
+@media (max-width: 599px){
+    .upgrade-table .btn
+    {
+        font-size: 13px;
+        font-weight: unset;
+        line-height: unset;
+        margin-bottom: 0;
+        padding: 2px;
+        text-align: center;
+        white-space: normal;
+        word-wrap: break-word;
+    }
+    
+	.rewardsTable, .ppdRateTable
+	{
+		font-size: 12px;
+	}
+    
+    #searchResults_wrapper .paging_full_numbers .paginate_button, #searchResults_wrapper .paging_full_numbers .paginate_active
+    {
+       padding: 2px 4px !important; 
+    }
+	
+	/* ADDED YETISHARE V4.2 */
+	.searchResults .searchLastCol
+	{
+		display: none;
+	}
+	
+	.search-tabs .tab-text, .search-tabs ul li .label-text
+	{
+		display: none;
+	}
+	/* END OF YETISHARE V4.2 */
+}
+
+@media (max-width: 1023px){ 
+    .accountBenefitWrapper {width: 100%; text-align:left; float:none;}
+    .responsiveAccountBenefitWrapper {width:235px; margin-left:auto; margin-right:auto;}
+    .reponsiveMobileHide {display:none;}
+    .contentPageWrapper .largeDownloadButtons img {margin:0px; width:280px; height:112px;}
+    .responsiveCaptchaWrapper {width:300px; margin-left:auto; margin-right:auto;}
+    .responsiveTable {width:100%;}
+    section {padding-bottom: 30px;}
+    .section-padding {padding-top:120px}
+    .metaRedirectWrapperTopAds {overflow-x: hidden;}
+    .metaRedirectWrapperBottomAds {overflow-x: hidden;}
+    .footerAds {overflow-x: hidden;}
+    .heading-1 {font-size:30px; text-align:center;}
+    .description-1 {text-align:center;}
+    .grey-box {text-align:center;}
+    h2 {text-align:center;}
+    .responsiveInfoTable {word-break: break-all; word-wrap: break-word;}
+    .dataTables_info {float:none !important; text-align:center !important; width:100% !important;}
+    .paging_full_numbers {width:100% !important;}
+    .dataTables_paginate {text-align:center !important; float:none !important;}
+    .share-file-table-header {width:30% !important;}
+    .container {overflow: hidden;}
+    .newsLetterRow {padding-left:0px; text-align:center; float:none;}
+    .homepage-section .heading-1 {overflow: visible !important; white-space: normal !important;}
+    .fileupload-content .url {word-break: break-all; word-wrap: break-word;}
+    .sliderContent div {display:none;}
+    .sliderContent table td:nth-child(2) {word-break: break-all; word-wrap: break-word;}
+    .imageviewer-extra-info td {word-break: break-all; word-wrap: break-word;}
+    .urlFileListingWrapper .fileSection .name {word-break: break-all; word-wrap: break-word;}
+    .scrollup {display:none;}
+}
+
+@media (max-width: 1240px){
+    .homepage-section-2 .share-animated { display: none; }
+    .homepage-section-2 .share-static { display: block; }
+}
+
+@media (max-width: 769px){
+    .scrollup {display:none !important;}
+    #fileUploadWrapper .modal-dialog {margin:0 !important;}
+}
+
+@media (max-width: 991px){ 
+.pricing-table .col-xs-6 {width:50% !important;}
+.pluginSocialLoginButtons {margin-left:auto; margin-right:auto; float:left; text-align:center;}
+
+/* ADDED YETISHARE V4.2 */
+.search-tabs .tab-text
+{
+	display: none;
+}
+/* END OF YETISHARE V4.2 */
+}
+
+@media (max-width: 480px){ 
+.pricing-table .col-xs-6 {width:100% !important;}
+.ui-dialog{	max-width: 450px !important; width: 100% !important; }
+}
