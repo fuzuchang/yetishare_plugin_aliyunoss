@@ -18,6 +18,7 @@ $oss_endpoint   = '';
 $oss_bucket     = '';
 $oss_iscname    = '0';
 $oss_dir_name    = 'files';
+$oss_max_upload_bytes    = 1048576000;
 
 // load existing settings
 if (strlen($plugin['plugin_settings']))
@@ -32,6 +33,7 @@ if (strlen($plugin['plugin_settings']))
         $oss_bucket     = $plugin_settings['oss_bucket'];
         $oss_iscname    = $plugin_settings['oss_iscname'];
         $oss_dir_name    = $plugin_settings['oss_dir_name']?$plugin_settings['oss_dir_name']:'files';
+        $oss_max_upload_bytes = $plugin_settings['oss_max_upload_bytes']?$plugin_settings['oss_max_upload_bytes']:$oss_max_upload_bytes;
     }
 }
 
@@ -52,4 +54,4 @@ define("ALI_OSS_EXPIRE",'30');
 //上传目录
 define("ALI_OSS_UPLOAD_DIR",$oss_dir_name.'/');
 //最大上传文件大小 以字节为单位
-define("ALI_OSS_MAX_UPLOAD_BYTES",1048576000);
+define("ALI_OSS_MAX_UPLOAD_BYTES",(int)$oss_max_upload_bytes);
