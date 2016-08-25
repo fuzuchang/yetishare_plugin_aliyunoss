@@ -51,7 +51,7 @@ if ($storageType == 'aliyun_oss')
         else
         {
             // path on s3
-            $ossObject = $file->localFilePath;
+            $ossObject = $file->alioss_object_name;
             // delete the file
             $rs = $OssClient->deleteObject($oss_bucket,$ossObject);
 			$pluginObj->deleteOssCache($file->id);

@@ -38,7 +38,7 @@ class pluginAliyunoss extends Plugin
 
         // queue cache for delete
 		$file     = file::loadById($fileId);		
-		$serverId = file::getDefaultLocalServerId(); 
+		$serverId =$this->getServerId();
         if ($serverId)
         {
             // get all file listing
@@ -54,6 +54,14 @@ class pluginAliyunoss extends Plugin
             // add folder aswell
             fileAction::queueDeleteFile($serverId, $cacheFilePath, $fileId);
         }
+    }
+
+    public function getServerId(){
+        $db = Database::getDatabase(true);
+        $db->close();
+        $db = Database::getDatabase(true);
+        $plugin   = $db->getRow("SELECT * FROM file_server WHERE serverType = 'aliyun_oss' LIMIT 1");
+        return (int)$plugin['id'];
     }
 
 }

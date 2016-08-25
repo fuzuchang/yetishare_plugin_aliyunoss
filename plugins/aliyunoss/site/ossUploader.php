@@ -70,7 +70,7 @@ class ossUploader extends uploader
         $dbInsert->uploadedDate  = coreFunctions::sqlDateTime();
         $dbInsert->statusId      = 1;
         $dbInsert->deleteHash    = $deleteHash;
-        $dbInsert->serverId      = 100;
+        $dbInsert->serverId      = $this->getServerId();
         $dbInsert->fileHash      = md5($fileUpload->name . $fileUpload->size . $fileUpload->type . microtime(true));
         $dbInsert->adminNotes    = '';
         $dbInsert->folderId      = null;
@@ -108,5 +108,13 @@ class ossUploader extends uploader
 
         $fileUpload->success_result_html = self::generateSuccessHtml($fileUpload, $this->options['upload_source']);
         return $fileUpload;
+    }
+
+    public function getServerId(){
+        $db = Database::getDatabase(true);
+        $db->close();
+        $db = Database::getDatabase(true);
+        $plugin   = $db->getRow("SELECT * FROM file_server WHERE serverType = 'aliyun_oss' LIMIT 1");
+        return (int)$plugin['id'];
     }
 }

@@ -52,22 +52,23 @@ if ($storageType == 'aliyun_oss')
         }
         else
         {
-            // get temp url for the file and stream to the user, valid only for 30 seconds
-            $options = array(
-                \OSS\OssClient::OSS_FILE_DOWNLOAD => basename($file->localFilePath),
-            );
+            // 下载object到内存
+            $fileContent = $OssClient->getObject($oss_bucket, $file->alioss_object_name);
 
-            $OssClient->getObject($oss_bucket, $file->localFilePath, $options);
-
-            // update download status every DOWNLOAD_TRACKER_UPDATE_FREQUENCY seconds
-            if (($timeTracker + DOWNLOAD_TRACKER_UPDATE_FREQUENCY) < time())
-            {
-                $timeTracker = time();
-                if (SITE_CONFIG_DOWNLOADS_TRACK_CURRENT_DOWNLOADS == 'yes')
+            // move to starting position
+                if ($forceDownload == true)
                 {
-                    $downloadTracker->update();
+                    echo $fileContent;
                 }
-            }
+                // update download status every DOWNLOAD_TRACKER_UPDATE_FREQUENCY seconds
+                if (($timeTracker + DOWNLOAD_TRACKER_UPDATE_FREQUENCY) < time())
+                {
+                    $timeTracker = time();
+                    if (SITE_CONFIG_DOWNLOADS_TRACK_CURRENT_DOWNLOADS == 'yes')
+                    {
+                        $downloadTracker->update();
+                    }
+                }
 
         }
     }

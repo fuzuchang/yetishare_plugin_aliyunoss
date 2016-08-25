@@ -55,13 +55,16 @@ if ($uploadServerDetails['serverType'] == 'aliyun_oss')
         }
         else
         {
-            // path on s3
+           /* // path on s3
             $newFilePath = substr($params['newFilename'], 0, 2).'/'.$params['newFilename'];
             // upload the files
             $rs = $OssClient->putObject($oss_bucket, $newFilePath, file_get_contents($params['tmpFile']));
             // upload done
             $file_size = filesize($params['tmpFile']);
-            @unlink($params['tmpFile']);
+            @unlink($params['tmpFile']);*/
+
+            // failed connecting
+            $fileUpload->error = 'Could not Upload to OSS file server.';
         }
     }
     
