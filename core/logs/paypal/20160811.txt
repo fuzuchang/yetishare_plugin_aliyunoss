@@ -1,6 +1,0 @@
-===========================================================
-2016-08-11 22:08:11 - Received called back on IPN: Array
-(
-)
-
-2016-08-11 22:08:12 - Failed - could not confirm payment params where from paypal
