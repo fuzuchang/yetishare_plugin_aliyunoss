@@ -17,11 +17,13 @@ if(isset($_REQUEST['fid']))
 
 
 ?>
-
+<script>
+    var AliyunOSSEnabled = 0;
+</script>
 <?php if (is_dir('plugins/aliyunoss')) { ?>
 <!--阿里云OSS ***************************************阿里云OSS ***************************************-->
 <script>
-var AliyunOSSEnabled    = <?php $plugin   = $db->getRow("SELECT * FROM plugin WHERE folder_name = 'aliyunoss' LIMIT 1"); echo (int) $plugin['plugin_enabled'];?>;
+    AliyunOSSEnabled    = <?php $plugin   = $db->getRow("SELECT * FROM plugin WHERE folder_name = 'aliyunoss' LIMIT 1"); echo (int) $plugin['plugin_enabled'];?>;
 var AliyunOSSPolicyUrl  = "http://<?php echo _CONFIG_SITE_HOST_URL; ?>/plugins/aliyunoss/site/policy.php";
 </script>
 <script src="http://<?php echo _CONFIG_SITE_HOST_URL; ?>/plugins/aliyunoss/assets/js/alioss.js"></script>
@@ -70,6 +72,10 @@ if ($showUploads == true)
         {
             maxChunkSize = <?php echo (coreFunctions::getPHPMaxUpload()>CHUNKED_UPLOAD_SIZE?CHUNKED_UPLOAD_SIZE:coreFunctions::getPHPMaxUpload()-5000); // in bytes, allow for smaller PHP upload limits ?>;
             var uploaderMaxSize = <?php echo $maxUploadSize; ?>;
+
+            if (AliyunOSSEnabled){
+                maxChunkSize *= 10;
+            }
         }
         <?php endif; ?>
 

@@ -61,7 +61,6 @@ var alioss = {
             data.url            = ALI_OSS.url;
             data.paramName      = 'file';
             data.xhrFields      = {withCredentials:false};
-            //data.maxChunkSize   = 0;
         }
     },
     set_upload_done_param:function (data) {
