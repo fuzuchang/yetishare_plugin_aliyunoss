@@ -74,7 +74,7 @@ if ($showUploads == true)
             var uploaderMaxSize = <?php echo $maxUploadSize; ?>;
 
             if (AliyunOSSEnabled){
-                maxChunkSize *= 10;
+                maxChunkSize  *= 2;
             }
         }
         <?php endif; ?>
