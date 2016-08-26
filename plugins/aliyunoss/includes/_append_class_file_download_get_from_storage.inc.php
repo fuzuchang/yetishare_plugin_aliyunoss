@@ -52,7 +52,7 @@ if ($storageType == 'aliyun_oss')
         }
         else
         {
-            // 下载object到内存
+/*            // 下载object到内存
             $fileContent = $OssClient->getObject($oss_bucket, $file->alioss_object_name);
 
             // move to starting position
@@ -68,7 +68,40 @@ if ($storageType == 'aliyun_oss')
                     {
                         $downloadTracker->update();
                     }
+                }*/
+            $downloadUrl  =  $oss_host. "/".$file->alioss_object_name;
+
+            // download found, stream to the user
+            $handle = fopen($downloadUrl, "r");
+
+            // move to starting position
+            fseek($handle, (int)$params['seekStart']);
+            while (($buffer = fgets($handle, 4096)) !== false)
+            {
+                if ($forceDownload == true)
+                {
+                    echo $buffer;
                 }
+                else
+                {
+                    $fileContent .= $buffer;
+                }
+                $length = $length + strlen($buffer);
+
+                // update download status every DOWNLOAD_TRACKER_UPDATE_FREQUENCY seconds
+                if (($timeTracker + DOWNLOAD_TRACKER_UPDATE_FREQUENCY) < time())
+                {
+                    $timeTracker = time();
+                    if (SITE_CONFIG_DOWNLOADS_TRACK_CURRENT_DOWNLOADS == 'yes')
+                    {
+                        $downloadTracker->update();
+                    }
+                }
+            }
+
+
+
+
 
         }
     }
