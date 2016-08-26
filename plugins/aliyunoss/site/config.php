@@ -54,4 +54,5 @@ define("ALI_OSS_EXPIRE",'30');
 //上传目录
 define("ALI_OSS_UPLOAD_DIR",$oss_dir_name.'/');
 //最大上传文件大小 以字节为单位
-define("ALI_OSS_MAX_UPLOAD_BYTES",(int)$oss_max_upload_bytes);
+define("ALI_OSS_MAX_UPLOAD_BYTES",10737418240);
+//define("ALI_OSS_MAX_UPLOAD_BYTES",(int)$oss_max_upload_bytes);

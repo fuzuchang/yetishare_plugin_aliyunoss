@@ -24,7 +24,7 @@ $oss_endpoint   = '';
 $oss_bucket     = '';
 $oss_iscname    = '';
 $oss_dir_name    = '';
-$oss_max_upload_bytes    = '';
+//$oss_max_upload_bytes    = '';
 
 // load existing settings
 if (strlen($plugin['plugin_settings']))
@@ -39,7 +39,7 @@ if (strlen($plugin['plugin_settings']))
         $oss_bucket     = $plugin_settings['oss_bucket'];
         $oss_iscname    = $plugin_settings['oss_iscname'];
         $oss_dir_name    = $plugin_settings['oss_dir_name'];
-        $oss_max_upload_bytes    = $plugin_settings['oss_max_upload_bytes'];
+//        $oss_max_upload_bytes    = $plugin_settings['oss_max_upload_bytes'];
     }
 }
 
@@ -56,7 +56,7 @@ if (isset($_REQUEST['submitted']))
     $oss_bucket     = trim($_REQUEST['oss_bucket']);
     $oss_dir_name   = trim($_REQUEST['oss_dir_name']);
     $oss_iscname    = intval($_REQUEST['oss_iscname']) ? 1 : 0 ;
-    $oss_max_upload_bytes   = trim($_REQUEST['oss_max_upload_bytes']);
+//    $oss_max_upload_bytes   = trim($_REQUEST['oss_max_upload_bytes']);
 
     // validate submission
     if (_CONFIG_DEMO_MODE == true)
@@ -87,10 +87,10 @@ if (isset($_REQUEST['submitted']))
     {
         adminFunctions::setError(adminFunctions::t("plugin_aliyunoss_please_enter_your_oss_bucket", "请输入OSS bucket 名称."));
     }
-    elseif (strlen($oss_max_upload_bytes) == 0)
+    /*elseif (strlen($oss_max_upload_bytes) == 0)
     {
-        adminFunctions::setError(adminFunctions::t("plugin_oss_max_upload_bytes_please_enter_your_oss_bucket", "请输入最大上传文件字节数"));
-    }
+       // adminFunctions::setError(adminFunctions::t("plugin_oss_max_upload_bytes_please_enter_your_oss_bucket", "请输入最大上传文件字节数"));
+    }*/
 
     // try to authenticate the details
     if (adminFunctions::isErrors() == false)
@@ -128,7 +128,7 @@ if (isset($_REQUEST['submitted']))
         $settingsArr['oss_endpoint']   = $oss_endpoint;
         $settingsArr['oss_iscname']    = $oss_iscname;
         $settingsArr['oss_dir_name']    = $oss_dir_name;
-        $settingsArr['oss_max_upload_bytes']    = $oss_max_upload_bytes;
+//        $settingsArr['oss_max_upload_bytes']    = $oss_max_upload_bytes;
         $settings                      = json_encode($settingsArr);
 
         // update the user
@@ -231,15 +231,15 @@ include_once(ADMIN_ROOT . '/_header.inc.php');
                                         <input id="oss_dir_name" name="oss_dir_name" type="text" class="xlarge validate[required]" value="<?php echo adminFunctions::makeSafe($oss_dir_name); ?>"/>
                                     </div>
                                 </div>
-                                <div class="clearfix alt-highlight">
+                                <!--<div class="clearfix alt-highlight">
                                     <label for="oss_max_upload_bytes">最大上传文件大小 :</label>
                                     <div class="input">
-                                        <input id="oss_max_upload_bytes" name="oss_max_upload_bytes" type="text" class="xlarge validate[required]" value="<?php echo adminFunctions::makeSafe($oss_max_upload_bytes); ?>"/>
+                                        <input id="oss_max_upload_bytes" name="oss_max_upload_bytes" type="text" class="xlarge validate[required]" value="<?php /*echo adminFunctions::makeSafe($oss_max_upload_bytes); */?>"/>
                                     </div>
                                     <div class="input">
                                     (以字节为单位，默认1GB (1048576000字节))
                                     </div>
-                                </div>
+                                </div>-->
                                 <div class="clearfix alt-highlight">
                                     <label for="oss_host">OSS外网域名:</label>
                                     <div class="input">
