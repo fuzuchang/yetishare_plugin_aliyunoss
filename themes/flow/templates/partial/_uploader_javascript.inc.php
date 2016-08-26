@@ -13,8 +13,12 @@ if(isset($_REQUEST['fid']))
 {
     $fid = (int)$_REQUEST['fid'];
 }
+
+
+
 ?>
 
+<?php if (is_dir('plugins/aliyunoss')) { ?>
 <!--阿里云OSS ***************************************阿里云OSS ***************************************-->
 <script>
 var AliyunOSSEnabled    = <?php $plugin   = $db->getRow("SELECT * FROM plugin WHERE folder_name = 'aliyunoss' LIMIT 1"); echo (int) $plugin['plugin_enabled'];?>;
@@ -22,7 +26,7 @@ var AliyunOSSPolicyUrl  = "http://<?php echo _CONFIG_SITE_HOST_URL; ?>/plugins/a
 </script>
 <script src="http://<?php echo _CONFIG_SITE_HOST_URL; ?>/plugins/aliyunoss/assets/js/alioss.js"></script>
 <!--阿里云OSS ***************************************阿里云OSS ***************************************-->
-
+<?php } ?>
 
 <script>
     var fileUrls = [];
@@ -36,6 +40,7 @@ var AliyunOSSPolicyUrl  = "http://<?php echo _CONFIG_SITE_HOST_URL; ?>/plugins/a
     var uploadComplete = true;
     $(document).ready(function() {
         document.domain = '<?php echo coreFunctions::getDocumentDomain(); ?>';
+
 <?php
 if ($showUploads == true)
 {
@@ -161,7 +166,10 @@ if ($showUploads == true)
                 })
                 .on('fileuploaddone', function(e, data) {
                     // keep a copy of the urls globally
-                    alioss.set_upload_done_param(data);
+                    if (typeof alioss == 'object'){
+                        alioss.set_upload_done_param(data);
+                    }
+
                     fileUrls.push(data['result'][0]['url']);
                     fileDeleteHashes.push(data['result'][0]['delete_hash']);
                     fileShortUrls.push(data['result'][0]['short_url']);
@@ -255,7 +263,9 @@ if ($showUploads == true)
                         "x:filename":data.originalFiles[0].name,
                         "x:user":'<?php $Auth  = Auth::getAuth();$_x_user_id = $Auth->loggedIn() ? $Auth->id : -1 ; echo $_x_user_id; ?>'
                     };
-                    alioss.set_policy_param(data);
+                    if (typeof alioss == 'object') {
+                        alioss.set_policy_param(data);
+                    }
                 });
     <?php
 }
