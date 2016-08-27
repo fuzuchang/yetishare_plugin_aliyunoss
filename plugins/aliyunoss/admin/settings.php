@@ -55,7 +55,7 @@ if (isset($_REQUEST['submitted']))
     $oss_endpoint   = trim($_REQUEST['oss_endpoint']);
     $oss_bucket     = trim($_REQUEST['oss_bucket']);
     $oss_dir_name   = trim($_REQUEST['oss_dir_name']);
-    $oss_iscname    = intval($_REQUEST['oss_iscname']) ? 1 : 0 ;
+    $oss_iscname    = intval($_REQUEST['oss_iscname']) ? true : false ;
 //    $oss_max_upload_bytes   = trim($_REQUEST['oss_max_upload_bytes']);
 
     // validate submission
@@ -107,12 +107,12 @@ if (isset($_REQUEST['submitted']))
         }
         else
         {
-            // check bucket
+           /* // check bucket
             if(!$ossClient->doesBucketExist($oss_bucket))
             {
                 // failed getting bucket
                 adminFunctions::setError(adminFunctions::t("plugin_aliyunoss_could_not_load_bucket", "We could not find the bucket or the OSS keys are incorrect, please try again."));
-            }
+            }*/
         }
     }
 
